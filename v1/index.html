@@ -10,6 +10,17 @@
   </style>
 </head>
 <body>
-  <iframe src="https://academia.camelionmedia.com/v1" title="Landing v1"></iframe>
+  <iframe id="ghl" src="about:blank" title="Landing v1"></iframe>
+  <script>
+    (function() {
+      var base = 'https://academia.camelionmedia.com/v1';
+      var params = new URLSearchParams(window.location.search);
+      // Add landing_variant from cookie
+      var cookie = document.cookie.split(';').map(c=>c.trim()).find(c=>c.startsWith('camelion_variant='));
+      if (cookie) params.set('landing_variant', cookie.split('=')[1]);
+      var qs = params.toString();
+      document.getElementById('ghl').src = base + (qs ? '?' + qs : '');
+    })();
+  </script>
 </body>
 </html>

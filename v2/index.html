@@ -567,6 +567,18 @@
 </footer>
 
 <script>
+// Pass UTMs + landing_variant to all /agendar links
+(function() {
+  var params = new URLSearchParams(window.location.search);
+  var cookie = document.cookie.split(';').map(c=>c.trim()).find(c=>c.startsWith('camelion_variant='));
+  if (cookie) params.set('landing_variant', cookie.split('=')[1]);
+  var qs = params.toString();
+  if (!qs) return;
+  document.querySelectorAll('a[href="/agendar"]').forEach(function(a) {
+    a.href = '/agendar?' + qs;
+  });
+})();
+
 // Mobile bar
 window.addEventListener('scroll', () => {
   document.getElementById('mobile-bar').classList.toggle('show', window.scrollY > 400);

@@ -242,5 +242,16 @@
 </footer>
 
 <script src="https://link.msgsndr.com/js/form_embed.js" type="text/javascript"></script>
+<script>
+  // Pass UTMs + landing_variant from URL to GHL booking iframe
+  (function() {
+    var params = new URLSearchParams(window.location.search);
+    if (!params.toString()) return;
+    var iframe = document.getElementById('wvajZpctyOxaVy1WSPJj_1781110231803');
+    if (!iframe) return;
+    var base = iframe.src.split('?')[0];
+    iframe.src = base + '?' + params.toString();
+  })();
+</script>
 </body>
 </html>
