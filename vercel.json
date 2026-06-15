@@ -1,5 +1,7 @@
 {
-  "buildCommand": "echo 'Static files only'",
-  "outputDirectory": ".",
-  "cleanUrls": false
+  "rewrites": [
+    { "source": "/guia-editor", "destination": "/guia-editor.html" },
+    { "source": "/guia-cliente", "destination": "/guia-cliente.html" },
+    { "source": "/guia-closers", "destination": "/guia-closers.html" }
+  ]
 }
