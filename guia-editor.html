@@ -1,0 +1,136 @@
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Camelion Editores — Guía del Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root { --green: #60EA7B; --green-dim: rgba(96,234,123,0.10); --green-border: rgba(96,234,123,0.22); --orange: #FF9500; --orange-dim: rgba(255,149,0,0.10); --bg: #0e1117; --bg2: #13171f; --bg3: #181d28; --border: rgba(255,255,255,0.07); --white: #f0f4ff; --gray: rgba(255,255,255,0.42); --font: 'Poppins', sans-serif; --radius: 14px; --content: 820px; }
+html { scroll-behavior: smooth; }
+body { font-family: var(--font); background: var(--bg); color: var(--white); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+nav { position: sticky; top: 0; z-index: 100; background: rgba(14,17,23,0.85); backdrop-filter: blur(18px); border-bottom: 1px solid var(--border); padding: 0 32px; height: 60px; display: flex; align-items: center; justify-content: space-between; }
+.nav-brand { display:flex; align-items:center; gap:8px; font-weight:900; font-size:17px; letter-spacing:-0.5px; }
+.nav-dot { width:9px; height:9px; border-radius:50%; background:var(--green); box-shadow:0 0 10px var(--green); display:inline-block; }
+.nav-pill { display:flex; align-items:center; gap:6px; background: var(--green-dim); border:1px solid var(--green-border); padding:5px 14px; border-radius:20px; font-size:12px; font-weight:700; color:var(--green); }
+.hero { max-width: var(--content); margin: 0 auto; padding: 72px 32px 56px; text-align: center; }
+.hero-badge { display:inline-flex; align-items:center; gap:6px; background:var(--green-dim); border:1px solid var(--green-border); padding:6px 16px; border-radius:20px; font-size:11px; font-weight:700; color:var(--green); letter-spacing:1.5px; text-transform:uppercase; margin-bottom:24px; }
+.hero h1 { font-size: clamp(36px, 6vw, 58px); font-weight: 900; letter-spacing: -2px; line-height: 1.05; margin-bottom: 20px; }
+.hero h1 span { color: var(--green); }
+.hero p { font-size: 17px; color: var(--gray); max-width: 520px; margin: 0 auto 40px; line-height: 1.7; }
+.content { max-width: var(--content); margin: 0 auto; padding: 0 32px 80px; }
+.section-label { display:inline-flex; align-items:center; gap:6px; font-size:10px; font-weight:800; letter-spacing:2px; text-transform:uppercase; color:var(--green); margin-bottom:12px; }
+.section-label::before { content:''; width:18px; height:2px; background:var(--green); border-radius:2px; display:inline-block; }
+h2 { font-size: 26px; font-weight:900; letter-spacing:-0.8px; margin-bottom:8px; }
+.section-sub { font-size:14px; color:var(--gray); margin-bottom:32px; }
+.steps { display:flex; flex-direction:column; gap:0; margin-bottom:56px; }
+.step { display:flex; gap:20px; align-items:flex-start; padding:24px 0; border-bottom:1px solid var(--border); }
+.step:last-child { border-bottom:none; }
+.step-num { width:40px; height:40px; flex-shrink:0; border-radius:50%; background:var(--green-dim); border:1.5px solid var(--green-border); display:flex; align-items:center; justify-content:center; font-weight:900; font-size:15px; color:var(--green); }
+.step-body h3 { font-size:16px; font-weight:800; margin-bottom:6px; }
+.step-body p { font-size:14px; color:var(--gray); line-height:1.7; }
+.step-body code { display:inline-block; background:var(--bg3); border:1px solid var(--border); padding:2px 10px; border-radius:6px; font-size:13px; color:var(--green); font-family: monospace; margin-top:6px; }
+.tabs-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; margin-bottom:56px; }
+.tab-card { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:24px 20px; position:relative; overflow:hidden; }
+.tab-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:var(--accent, var(--green)); }
+.tab-icon { font-size:28px; margin-bottom:12px; display:block; }
+.tab-name { font-weight:900; font-size:16px; margin-bottom:8px; }
+.tab-desc { font-size:13px; color:var(--gray); line-height:1.65; }
+.tab-items { margin-top:14px; display:flex; flex-direction:column; gap:6px; }
+.tab-item { display:flex; align-items:flex-start; gap:8px; font-size:12px; color:var(--gray); }
+.tab-item::before { content:'→'; color:var(--accent, var(--green)); flex-shrink:0; font-weight:700; }
+.feature-block { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:28px; margin-bottom:16px; }
+.feature-block h3 { font-size:17px; font-weight:800; margin-bottom:8px; display:flex; align-items:center; gap:8px; }
+.feature-block p { font-size:14px; color:var(--gray); line-height:1.7; }
+.faq { display:flex; flex-direction:column; gap:12px; margin-bottom:56px; }
+.faq-item { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:20px 24px; }
+.faq-q { font-weight:800; font-size:14px; margin-bottom:8px; display:flex; align-items:center; gap:8px; }
+.faq-q span { color:var(--green); }
+.faq-a { font-size:13px; color:var(--gray); line-height:1.7; }
+.tips-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; margin-bottom:56px; }
+.tip { background:var(--bg2); border:1px solid var(--border); border-radius:12px; padding:18px 16px; }
+.tip-icon { font-size:22px; margin-bottom:10px; display:block; }
+.tip-title { font-weight:800; font-size:13px; margin-bottom:5px; color:var(--green); }
+.tip-text { font-size:12px; color:var(--gray); line-height:1.6; }
+footer { border-top:1px solid var(--border); text-align:center; padding:32px; font-size:12px; color:var(--gray); }
+.divider { border:none; border-top:1px solid var(--border); margin:56px 0; }
+@media (max-width:600px) { nav { padding:0 16px; } .hero { padding:48px 20px 40px; } .content { padding:0 20px 60px; } }
+</style>
+</head>
+<body>
+<nav><div class="nav-brand"><span class="nav-dot"></span>Camelion</div><div class="nav-pill">🎯 Guía Editores</div></nav>
+<div class="hero">
+  <div class="hero-badge">🚀 Bienvenido al equipo de edición</div>
+  <h1>Tu centro de<br/><span>operaciones</span> de edición</h1>
+  <p>Todo lo que necesitás saber para trabajar en Camelion: aceptar misiones, editar videos, responder correcciones y ganar dinero.</p>
+</div>
+<div class="content">
+  <div class="section-label">Primeros pasos</div>
+  <h2>Cómo entrar y empezar</h2>
+  <p class="section-sub">El portal te detecta automáticamente como editor. No tienes acceso a la parte de clientes ni admin.</p>
+  <div class="steps">
+    <div class="step"><div class="step-num">1</div><div class="step-body"><h3>Abrí clientes.camelionmedia.com</h3><p>Desde cualquier navegador en tu computadora o celular.</p><code>clientes.camelionmedia.com</code></div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-body"><h3>Ingresá con tu cuenta</h3><p>Usá el email y contraseña que te dio Adrian. Es tuya, privada y personal.</p></div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-body"><h3>Ves el Mission Board</h3><p>El portal te muestra automáticamente tu panel de editor con todas las misiones disponibles y tus trabajos activos.</p></div></div>
+  </div>
+  <hr class="divider">
+  <div class="section-label">Navegación</div>
+  <h2>Las 5 secciones de tu panel</h2>
+  <p class="section-sub">Cada tab tiene un propósito. Acá está todo lo que podés hacer en cada una.</p>
+  <div class="tabs-grid">
+    <div class="tab-card"><div class="tab-icon">🎯</div><div class="tab-name">MISIONES</div><div class="tab-desc">Ver trabajos disponibles activos en tiempo real. El primero que clickea "Solicitar" la toma.</div><div class="tab-items"><div class="tab-item">Ver cliente, duración, software requerido</div><div class="tab-item">Clickear "Solicitar" para aceptar la misión</div><div class="tab-item">Ver ganancia en USD</div></div></div>
+    <div class="tab-card"><div class="tab-icon">⚡</div><div class="tab-name">ESTADO</div><div class="tab-desc">Ver tus entregas pasadas, su estado actual, y comentarios.</div><div class="tab-items"><div class="tab-item">Filtrar por estado (pendiente, editando, etc)</div><div class="tab-item">Ver cuando cada video fue entregado</div><div class="tab-item">Ver historial completo</div></div></div>
+    <div class="tab-card"><div class="tab-icon">💼</div><div class="tab-name">MIS ENTREGAS</div><div class="tab-desc">Tu panel de edición. Aca subes los videos editados.</div><div class="tab-items"><div class="tab-item">Ver mis videos en edición</div><div class="tab-item">Ver correcciones del cliente</div><div class="tab-item">Subir el video editado</div></div></div>
+    <div class="tab-card"><div class="tab-icon">🏆</div><div class="tab-name">PERFIL</div><div class="tab-desc">Tu perfil como editor. XP, logros, estadísticas de trabajo.</div><div class="tab-items"><div class="tab-item">Ver tu reputación y XP acumulado</div><div class="tab-item">Ver ranking semanal</div><div class="tab-item">Ver tus logros desbloqueados</div></div></div>
+    <div class="tab-card"><div class="tab-icon">💬</div><div class="tab-name">CHAT</div><div class="tab-desc">Chat privado con el equipo de Camelion.</div><div class="tab-items"><div class="tab-item">Comunicarte con admin y otros editores</div><div class="tab-item">Hacer preguntas sobre misiones</div><div class="tab-item">Recibir notificaciones en tiempo real</div></div></div>
+  </div>
+  <hr class="divider">
+  <div class="section-label">Flujo de trabajo</div>
+  <h2>🎯 De misión a dinero en 5 pasos</h2>
+  <p class="section-sub">Este es el flujo completo cada vez que haces un trabajo.</p>
+  <div class="steps">
+    <div class="step"><div class="step-num">1</div><div class="step-body"><h3>Ve una misión en MISIONES</h3><p>Admin activa un trabajo. Aparece el cliente, tipo de video, duración, software, y tu ganancia en USD. Tenés que ser rápido — gana quien clickea primero.</p></div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-body"><h3>Clickeá "Solicitar"</h3><p>El admin recibe tu solicitud. Te avisa cuando acepta tu solicitud. Cuando pasa, aparece la misión en "MIS ENTREGAS" y podés ver los videos del cliente.</p></div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-body"><h3>Editá y subí el video</h3><p>Descargar el material del cliente → Editá en tu software → Subí el archivo editado al portal. El cliente recibe una notificación.</p></div></div>
+    <div class="step"><div class="step-num">4</div><div class="step-body"><h3>Respondé correcciones (si las hay)</h3><p>Si el cliente pide cambios, los ves en el portal con timestamp exacto. Hacés los cambios y volvés a subir. Podés hacer hasta N rondas según su plan.</p></div></div>
+    <div class="step"><div class="step-num">5</div><div class="step-body"><h3>Cliente confirma = dinero</h3><p>Cuando el cliente aprueba tu trabajo final, el video pasa a "Confirmado". Tu ganancia se registra automáticamente. Cada viernes, Adrian te transfiere a Binance.</p></div></div>
+  </div>
+  <hr class="divider">
+  <div class="section-label">Ganancia y pagos</div>
+  <h2>💰 Cómo se paga en Camelion</h2>
+  <p class="section-sub">Cada misión tiene un precio fijo que ves antes de aceptarla.</p>
+  <div class="feature-block"><h3>💵 El precio es variable</h3><p>Depende de la complejidad del video, el software requerido, y la urgencia. Desde $5 USD hasta lo que negocias con el admin. El precio está en cada misión que ves en el Mission Board.</p></div>
+  <div class="feature-block"><h3>📅 Pagos todos los viernes</h3><p>Cada viernes a la mañana, Adrian procesa todos los pagos. Transferencias directas a tu Binance ID (que registraste en tu perfil). Sin límites, sin comisión.</p></div>
+  <div class="feature-block"><h3>⚡ Pagos por video, no por hora</h3><p>No importa cuánto tiempo te tome. Si la misión dice $20, cobras $20. Algunos editores optimizan el workflow y cobran mucho más por hora — eso depende de vos.</p></div>
+  <hr class="divider">
+  <div class="section-label">Sistema de XP</div>
+  <h2>🏆 Logros, niveles y ranking</h2>
+  <p class="section-sub">Cada video que completas suma XP. Acumulás puntos para subir de nivel.</p>
+  <div class="feature-block"><h3>XP por cada video completado</h3><p>Cada misión que confirma el cliente suma 100 XP base. Videos de mayor complejidad suman más (hasta 300 XP). Los mismos que haces con correcciones suman bonus de velocidad.</p></div>
+  <div class="feature-block"><h3>Niveles: Rookie → Legend</h3><p>Rookie (0-500 XP) → Junkie (500-1500) → Pro (1500-3000) → Master (3000-6000) → Legend (6000+). Cada nivel desbloquea nuevos logros y más visibilidad en el ranking.</p></div>
+  <div class="feature-block"><h3>Ranking semanal</h3><p>Los top 5 editores de la semana aparecen en tu perfil. La semana reinicia cada domingo a las 00:00 UTC. Mayor XP = mayor ranking = más misiones premium asignadas por Adrian.</p></div>
+  <hr class="divider">
+  <div class="section-label">Preguntas frecuentes</div>
+  <h2>❓ FAQ</h2>
+  <div class="faq">
+    <div class="faq-item"><div class="faq-q"><span>P:</span> ¿Qué pasa si no termino una misión a tiempo?</div><div class="faq-a">No hay deadline "duro" en el contrato. Pero si te demoras mucho, el cliente puede cancelar el trabajo o los siguientes que pide. Lo mejor es ser rápido. Si necesitás ayuda, chateá al admin.</div></div>
+    <div class="faq-item"><div class="faq-q"><span>P:</span> ¿Puedo trabajar en varias misiones a la vez?</div><div class="faq-a">Sí, podés. El admin te puede asignar múltiples videos. Solo asegurate de poder entregarlos sin comprometer la calidad.</div></div>
+    <div class="faq-item"><div class="faq-q"><span>P:</span> ¿Qué software debo usar?</div><div class="faq-a">Cada misión especifica el software requerido (Premiere, DaVinci Resolve, After Effects, CapCut, etc.). El cliente da referencias de color, estilo y las preferencias de su brand.</div></div>
+    <div class="faq-item"><div class="faq-q"><span>P:</span> ¿Cuántas rondas de corrección hay?</div><div class="faq-a">Depende del plan del cliente. Starter = 1 ronda, Premium = 3 rondas, Gold = unlimited. Si el cliente agota, puede pagar para agregar más.</div></div>
+    <div class="faq-item"><div class="faq-q"><span>P:</span> ¿Cómo recibo los pagos?</div><div class="faq-a">Via Binance transfer. Necesitás tu Binance ID configurado en tu perfil. Adrian procesa los pagos todos los viernes.</div></div>
+  </div>
+  <hr class="divider">
+  <div class="section-label">Pro tips</div>
+  <h2>💡 Consejos para maximizar ganancia</h2>
+  <div class="tips-grid">
+    <div class="tip"><div class="tip-icon">⚡</div><div class="tip-title">Sé rápido en MISIONES</div><div class="tip-text">Las mejores misiones (más $ o menos trabajo) se toman en minutos. Checkea cada hora o activa notificaciones.</div></div>
+    <div class="tip"><div class="tip-icon">🎯</div><div class="tip-title">Lee bien el brief</div><div class="tip-text">Antes de clickear "Solicitar", lee el brief completo. Algunos videos parecen fáciles pero tienen detalles complejos.</div></div>
+    <div class="tip"><div class="tip-icon">📞</div><div class="tip-title">Chatea si no entiendes</div><div class="tip-text">Cualquier duda sobre una misión, preguntá en CHAT. Es mejor aclarar antes que entregar mal.</div></div>
+    <div class="tip"><div class="tip-icon">✅</div><div class="tip-title">Responde rápido correcciones</div><div class="tip-text">Las correcciones rápidas = clientes felices = mejores misiones futuras. Priorizá ese trabajo.</div></div>
+    <div class="tip"><div class="tip-icon">📁</div><div class="tip-title">Organiza tu workflow</div><div class="tip-text">Descarga → Edita → Verifica QA → Sube. Una buena estructura evita errores y te ahorra tiempo.</div></div>
+    <div class="tip"><div class="tip-icon">🏆</div><div class="tip-title">Sube de nivel regularmente</div><div class="tip-text">Más XP = mejor ranking = más misiones premium. Vale la pena hacer videos aunque sea para XP.</div></div>
+  </div>
+</div>
+<footer><strong>¿Preguntas?</strong> Chateá directamente en el portal o escribí a Adrian. Somos un equipo pequeño y queremos que te vaya bien. 🚀</footer>
+</body>
+</html>
