@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>&#xA1;Reuni&oacute;n confirmada! &mdash; Camelion Media</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Inter:wght@400;500&display=swap" rel="stylesheet"/>
+  <!-- Meta Pixel -->
+  <script>
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+    document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '1226630459322247');
+    fbq('track', 'PageView');
+    // Schedule = agenda confirmada (evento de mayor valor del embudo)
+    fbq('track', 'Schedule');
+  </script>
+  <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=1226630459322247&ev=Schedule&noscript=1"/></noscript>
+  <!-- End Meta Pixel -->
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green:  #60EA7B;
+      --green2: #3dd65c;
+      --bg:     #070709;
+      --card:   rgba(255,255,255,0.04);
+      --border: rgba(255,255,255,0.08);
+      --text:   #e8e8f0;
+      --muted:  #6b6b80;
+      --radius: 18px;
+      --wapp:   #25D366;
+      --wapp2:  #1ebe5d;
+    }
+
+    html { scroll-behavior: smooth; overflow-x: hidden; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 10% -10%, rgba(96,234,123,0.07) 0%, transparent 60%),
+                  radial-gradient(ellipse 60% 50% at 90% 110%, rgba(96,234,123,0.05) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 0 5%;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(7,7,9,0.7);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo { font-size: 1.2rem; font-weight: 800; letter-spacing: -0.03em; color: #fff; text-decoration: none; }
+    .nav-logo span { color: var(--green); }
+
+    section { position: relative; z-index: 1; }
+    .container { max-width: 860px; margin: 0 auto; padding: 0 5%; }
+
+    /* HERO */
+    .hero {
+      padding: 120px 5% 60px;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(96,234,123,0.1);
+      border: 1px solid rgba(96,234,123,0.25);
+      padding: 6px 16px;
+      border-radius: 100px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--green);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 28px;
+      animation: fadeUp 0.6s 0.1s both;
+    }
+    .badge-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: pulse 2s infinite;
+    }
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      color: #fff;
+      margin-bottom: 16px;
+      animation: fadeUp 0.6s 0.2s both;
+    }
+    .hero h1 em { color: var(--green); font-style: normal; }
+    .hero p {
+      font-size: clamp(0.95rem, 2vw, 1.1rem);
+      color: var(--muted);
+      max-width: 500px;
+      margin: 0 auto;
+      animation: fadeUp 0.6s 0.3s both;
+    }
+
+    /* STEPS */
+    .steps-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      max-width: 420px;
+      margin: 40px auto 0;
+      animation: fadeUp 0.6s 0.35s both;
+    }
+    .step-item { display: flex; flex-direction: column; align-items: center; gap: 8px; flex: 1; }
+    .step-circle {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700;
+    }
+    .step-circle.done { background: var(--green); color: #000; }
+    .step-circle.active { background: rgba(96,234,123,0.1); border: 2px solid var(--green); color: var(--green); }
+    .step-circle.pending { background: var(--card); border: 1px solid var(--border); color: var(--muted); }
+    .step-label { font-size: 11px; color: var(--muted); text-align: center; line-height: 1.3; }
+    .step-label.active { color: var(--green); font-weight: 600; }
+    .step-line { height: 2px; flex: 1; background: var(--border); margin-bottom: 20px; max-width: 60px; }
+    .step-line.done { background: var(--green); }
+
+    /* VIDEO */
+    .video-section {
+      position: relative; z-index: 1;
+      padding: 0 5% 48px;
+      max-width: 860px;
+      margin: 0 auto;
+      animation: fadeUp 0.6s 0.4s both;
+    }
+    .section-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--green);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+    .video-title {
+      font-size: clamp(1.2rem, 3vw, 1.7rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #fff;
+      text-align: center;
+      margin-bottom: 28px;
+      line-height: 1.2;
+    }
+    .video-wrap {
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: #000;
+    }
+
+    /* CTA WHATSAPP */
+    .cta-section {
+      position: relative; z-index: 1;
+      padding: 0 5% 56px;
+      max-width: 860px;
+      margin: 0 auto;
+      animation: fadeUp 0.6s 0.45s both;
+    }
+    .cta-box {
+      background: linear-gradient(135deg, rgba(37,211,102,0.08) 0%, rgba(37,211,102,0.03) 100%);
+      border: 1px solid rgba(37,211,102,0.2);
+      border-radius: var(--radius);
+      padding: 48px 40px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-box::before {
+      content: '';
+      position: absolute;
+      top: -80px; right: -80px;
+      width: 260px; height: 260px;
+      background: radial-gradient(circle, rgba(37,211,102,0.08) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .urgency-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 14px;
+      background: rgba(37,211,102,0.1);
+      border: 1px solid rgba(37,211,102,0.2);
+      border-radius: 100px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--wapp);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .urgency-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--wapp); animation: blink 1.5s infinite; }
+    .cta-box h2 {
+      font-size: clamp(1.4rem, 3.5vw, 2.1rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: #fff;
+      line-height: 1.1;
+      margin-bottom: 12px;
+    }
+    .cta-box h2 em { color: var(--green); font-style: normal; }
+    .cta-desc {
+      font-size: 0.95rem;
+      color: var(--muted);
+      max-width: 440px;
+      margin: 0 auto 32px;
+      line-height: 1.7;
+    }
+    .cta-desc strong { color: var(--text); font-weight: 600; }
+    .btn-wapp {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 36px;
+      background: var(--wapp);
+      color: #fff;
+      font-family: 'Poppins', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      border-radius: 100px;
+      text-decoration: none;
+      transition: all 0.2s;
+      box-shadow: 0 8px 32px rgba(37,211,102,0.25);
+    }
+    .btn-wapp:hover { background: var(--wapp2); transform: translateY(-2px); box-shadow: 0 12px 40px rgba(37,211,102,0.35); }
+    .btn-wapp svg { width: 22px; height: 22px; fill: #fff; flex-shrink: 0; }
+    .cta-note { margin-top: 14px; font-size: 0.75rem; color: var(--muted); }
+
+    /* DIVIDER */
+    .section-divider {
+      position: relative; z-index: 1;
+      max-width: 860px;
+      margin: 0 auto 48px;
+      padding: 0 5%;
+    }
+    .section-divider hr { border: none; border-top: 1px solid var(--border); }
+    .section-divider span {
+      display: block;
+      text-align: center;
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-top: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    /* TESTIMONIOS */
+    .testi-section {
+      position: relative; z-index: 1;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 5% 80px;
+    }
+    .testi-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+    .testi-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: border-color 0.2s;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.5s ease, transform 0.5s ease, border-color 0.2s;
+    }
+    .testi-card.visible { opacity: 1; transform: translateY(0); }
+    .testi-card:hover { border-color: rgba(96,234,123,0.2); }
+    .testi-video { position: relative; padding-bottom: 56.25%; background: #000; }
+    .testi-video iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+    .testi-body { padding: 20px; }
+    .stars { color: var(--green); font-size: 13px; margin-bottom: 8px; letter-spacing: 2px; }
+    .testi-quote { font-size: 0.82rem; color: var(--muted); line-height: 1.7; margin-bottom: 12px; font-style: italic; }
+    .testi-name { font-size: 0.88rem; font-weight: 700; color: #fff; }
+    .testi-role { font-size: 0.75rem; color: var(--muted); }
+
+    /* FOOTER */
+    footer {
+      position: relative; z-index: 1;
+      padding: 32px 5%;
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+    .footer-logo { font-size: 1rem; font-weight: 800; color: #fff; margin-bottom: 6px; }
+    .footer-logo span { color: var(--green); }
+    footer p { font-size: 0.75rem; color: var(--muted); }
+
+    /* ANIMATIONS */
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes pulse { 0%,100% { box-shadow: 0 0 10px var(--green); } 50% { box-shadow: 0 0 20px var(--green), 0 0 40px rgba(96,234,123,0.3); } }
+    @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+    @media (max-width: 620px) {
+      nav { padding: 0 20px; }
+      .hero { padding: 100px 20px 48px; }
+      .video-section, .cta-section, .testi-section, .section-divider { padding-left: 20px; padding-right: 20px; }
+      .testi-grid { grid-template-columns: 1fr; }
+      .cta-box { padding: 32px 24px; }
+      .step-line { max-width: 32px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="/">Camelion<span>.</span></a>
+</nav>
+
+<div class="hero">
+  <div class="hero-badge">
+    <span class="badge-dot"></span>
+    Reuni&oacute;n confirmada
+  </div>
+  <h1>Tu lugar est&aacute; reservado.<br/><em>Ahora complet&aacute; tu registro.</em></h1>
+  <p>Mir&aacute; el video y mand&aacute;nos un WhatsApp para confirmar tu lugar. Sin esto, no podemos garantizar tu horario.</p>
+
+  <div class="steps-row">
+    <div class="step-item">
+      <div class="step-circle done">
+        <svg viewBox="0 0 24 24" width="14" height="14" stroke="#000" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <span class="step-label">Agendaste<br/>tu reuni&oacute;n</span>
+    </div>
+    <div class="step-line done"></div>
+    <div class="step-item">
+      <div class="step-circle active">2</div>
+      <span class="step-label active">Mir&aacute; el<br/>video</span>
+    </div>
+    <div class="step-line"></div>
+    <div class="step-item">
+      <div class="step-circle pending">3</div>
+      <span class="step-label">Confirm&aacute;<br/>por WhatsApp</span>
+    </div>
+  </div>
+</div>
+
+<div class="video-section">
+  <div class="section-label">Antes de la reuni&oacute;n</div>
+  <h2 class="video-title">Mir&aacute; esto para que la llamada<br/>sea 10 veces m&aacute;s productiva.</h2>
+  <div class="video-wrap">
+    <div style="position:relative;padding:56.25% 0 0 0;">
+      <iframe
+        frameborder="0" allowfullscreen
+        src="about:blank"
+        id="ifr_699396ede18db05d4442087d"
+        style="position:absolute;top:0;left:0;width:100%;height:100%;"
+        referrerpolicy="origin"
+        onload="this.onload=null,this.src='https://scripts.converteai.net/5bd7dfa9-4835-4799-9116-2166d8572e7c/players/699396ede18db05d4442087d/v4/embed.html'+(location.search||'?')+'&vl='+encodeURIComponent(location.href)">
+      </iframe>
+    </div>
+  </div>
+</div>
+
+<div class="cta-section">
+  <div class="cta-box">
+    <div class="urgency-tag"><span class="urgency-dot"></span>&Uacute;ltimo paso obligatorio</div>
+    <h2>Complet&aacute; tu registro<br/><em>ahora mismo.</em></h2>
+    <p class="cta-desc">Tu reuni&oacute;n est&aacute; agendada pero <strong>no est&aacute; confirmada</strong> hasta que nos mand&eacute;s un mensaje. Solo toma 10 segundos.</p>
+    <a class="btn-wapp" href="https://api.whatsapp.com/send?phone=15054852254&text=Buenas!%20Quiero%20confirmar%20la%20reuni%C3%B3n%20para%20que%20me%20ayuden%20con%20mis%20videos" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      Confirmar mi reuni&oacute;n por WhatsApp
+    </a>
+    <p class="cta-note">&#128197; Un asesor va a confirmar tu horario antes de la llamada</p>
+  </div>
+</div>
+
+<div class="section-divider">
+  <hr/>
+  <span>Lo que dicen los que ya delegaron</span>
+</div>
+
+<div class="testi-section">
+  <div class="testi-grid">
+    <div class="testi-card">
+      <div class="testi-video">
+        <iframe src="https://player.vimeo.com/video/832873870" allow="autoplay; fullscreen" allowfullscreen loading="lazy"></iframe>
+      </div>
+      <div class="testi-body">
+        <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <p class="testi-quote">"Una de las mejores cosas que puede hacer cualquier emprendedor es delegar las cosas que otro puede hacer mejor."</p>
+        <div class="testi-name">Pablo Arango</div>
+        <div class="testi-role">Reflexiones Estoicas | +714K en YouTube</div>
+      </div>
+    </div>
+    <div class="testi-card">
+      <div class="testi-video">
+        <iframe src="https://player.vimeo.com/video/832874695" allow="autoplay; fullscreen" allowfullscreen loading="lazy"></iframe>
+      </div>
+      <div class="testi-body">
+        <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <p class="testi-quote">"Cuando s&eacute; que Adri&aacute;n est&aacute; a cargo de los videos, estoy tranquila porque entiende lo que nos gusta."</p>
+        <div class="testi-name">Marissa Belvis</div>
+        <div class="testi-role">Mentora de negocios | Puerto Rico</div>
+      </div>
+    </div>
+    <div class="testi-card">
+      <div class="testi-video">
+        <iframe src="https://player.vimeo.com/video/858981646" allow="autoplay; fullscreen" allowfullscreen loading="lazy"></iframe>
+      </div>
+      <div class="testi-body">
+        <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <p class="testi-quote">"El contenido en redes sociales estaba siendo un cuello de botella y me estaba generando much&iacute;simo estr&eacute;s."</p>
+        <div class="testi-name">Kika</div>
+        <div class="testi-role">Metabolismo y Fitness | +62K en IG</div>
+      </div>
+    </div>
+    <div class="testi-card">
+      <div class="testi-video">
+        <iframe src="https://player.vimeo.com/video/891932524" allow="autoplay; fullscreen" allowfullscreen loading="lazy"></iframe>
+      </div>
+      <div class="testi-body">
+        <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <p class="testi-quote">"Buscaba poder delegar la edici&oacute;n de mis videos para ganar tiempo y no ha sido sencillo encontrar gente para trabajar."</p>
+        <div class="testi-name">Gala</div>
+        <div class="testi-role">Cuerpo fitness para madres | +203K en IG</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-logo">Camelion<span>.</span></div>
+  <p>&copy; 2026 Camelion Media &middot; Buenos Aires, Argentina</p>
+</footer>
+
+<script>
+var s=document.createElement("script");
+s.src="https://scripts.converteai.net/lib/js/smartplayer-wc/v4/sdk.js";
+s.async=true;
+document.head.appendChild(s);
+</script>
+<script>
+const cards = document.querySelectorAll('.testi-card');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      setTimeout(() => e.target.classList.add('visible'), i * 80);
+      observer.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.08 });
+cards.forEach(c => observer.observe(c));
+</script>
+
+</body>
+</html>
