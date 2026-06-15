@@ -1,0 +1,5 @@
+{
+  "buildCommand": "echo 'Static files only'",
+  "outputDirectory": ".",
+  "cleanUrls": false
+}
