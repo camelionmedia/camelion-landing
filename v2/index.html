@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Deja de editar tus videos — Camelion</title>
+  <title>Camelion para Agencias — Edición de video sin drama</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <!-- Meta Pixel -->
   <script>
     !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -16,279 +16,283 @@
     fbq('init', '1226630459322247');
     fbq('track', 'PageView');
   </script>
-  <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1226630459322247&ev=PageView&noscript=1" /></noscript>
+  <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1226630459322247&ev=PageView&noscript=1"/></noscript>
+
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --green: #60EA7B;
-      --bg: #0a0a0a;
-      --text: #f5f5f5;
-      --muted: #a0a0a0;
-      --card: rgba(255,255,255,0.04);
-      --border: rgba(255,255,255,0.08);
+      --green:  #60EA7B;
+      --bg:     #080808;
+      --surface: #111113;
+      --border: rgba(255,255,255,0.07);
+      --text:   #f0f0f0;
+      --muted:  #888;
+      --red:    #ff4d4d;
     }
 
     html { scroll-behavior: smooth; }
     body {
-      font-family: 'Inter', sans-serif;
+      font-family: 'Poppins', sans-serif;
       background: var(--bg);
       color: var(--text);
-      line-height: 1.6;
       overflow-x: hidden;
     }
 
-    /* GRADIENTS */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background: radial-gradient(ellipse 120% 80% at 50% 0%, rgba(96,234,123,0.08) 0%, transparent 50%),
-                  radial-gradient(ellipse 80% 100% at 50% 100%, rgba(96,234,123,0.04) 0%, transparent 60%);
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    body > * { position: relative; z-index: 1; }
-
-    /* NAV */
+    /* ── NAV ── */
     nav {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 100;
-      padding: 16px 5%;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: rgba(10,10,10,0.8);
-      backdrop-filter: blur(10px);
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      height: 60px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 5%;
+      background: rgba(8,8,8,0.85);
+      backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--border);
     }
-
-    .logo {
-      font-size: 1rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      color: #fff;
-    }
-
-    .logo span { color: var(--green); }
-
-    .cta-nav {
-      background: var(--green);
-      color: #000;
-      padding: 8px 20px;
-      border-radius: 100px;
-      font-weight: 600;
-      font-size: 0.85rem;
+    .nav-logo { font-size: 1.1rem; font-weight: 800; color: #fff; }
+    .nav-logo span { color: var(--green); }
+    .nav-cta {
+      background: var(--green); color: #000;
+      font-weight: 700; font-size: 0.82rem;
+      padding: 9px 22px; border-radius: 100px;
       text-decoration: none;
-      transition: all 0.2s;
+      transition: box-shadow 0.2s, transform 0.2s;
     }
+    .nav-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(96,234,123,0.35); }
 
-    .cta-nav:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(96,234,123,0.3);
-    }
-
-    /* HERO */
+    /* ── HERO ── */
     #hero {
       min-height: 100vh;
-      padding: 80px 5% 60px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-    }
-
-    .hero-overline {
-      font-size: 0.75rem;
-      font-weight: 600;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--green);
-      margin-bottom: 24px;
-      opacity: 0.8;
-    }
-
-    h1 {
-      font-family: 'Poppins', sans-serif;
-      font-size: clamp(2.5rem, 8vw, 4.5rem);
-      font-weight: 900;
-      line-height: 1.1;
-      letter-spacing: -0.02em;
-      margin-bottom: 32px;
-      max-width: 900px;
-    }
-
-    h2 {
-      font-family: 'Poppins', sans-serif;
-      font-weight: 900;
-    }
-
-    h3 {
-      font-family: 'Poppins', sans-serif;
-      font-weight: 800;
-    }
-
-    h1 em {
-      font-style: normal;
-      color: var(--green);
-    }
-
-    .hero-sub {
-      font-size: clamp(1rem, 2.5vw, 1.2rem);
-      color: var(--muted);
-      max-width: 600px;
-      margin: 0 auto 48px;
-      line-height: 1.7;
-    }
-
-    /* VIDEO SECTION */
-    #vsl {
-      max-width: 800px;
-      width: 100%;
-      margin: 0 auto 64px;
-      border-radius: 20px;
-      overflow: hidden;
-      border: 1px solid var(--border);
-      background: #000;
-      aspect-ratio: 16/9;
-    }
-
-    #vsl iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-
-    .vsl-label {
-      font-size: 0.75rem;
-      color: var(--muted);
-      margin-top: 16px;
-      text-align: center;
-      font-weight: 500;
-    }
-
-    /* PROBLEMS SECTION */
-    #problems {
-      padding: 80px 5%;
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-
-    .problems-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 32px;
-      margin-top: 48px;
-    }
-
-    @media (max-width: 900px) {
-      .problems-grid { grid-template-columns: repeat(2, 1fr); }
-    }
-
-    @media (max-width: 600px) {
-      .problems-grid { grid-template-columns: 1fr; }
-    }
-
-    .problem-card {
-      padding: 32px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      transition: all 0.3s;
-    }
-
-    .problem-card:hover {
-      border-color: rgba(96,234,123,0.25);
-      background: rgba(96,234,123,0.02);
-    }
-
-    .problem-icon {
-      font-size: 2.5rem;
-      margin-bottom: 16px;
-    }
-
-    .problem-card h3 {
-      font-size: 1.1rem;
-      font-weight: 700;
-      margin-bottom: 12px;
-    }
-
-    .problem-card p {
-      font-size: 0.95rem;
-      color: var(--muted);
-      line-height: 1.6;
-    }
-
-    /* SOLUTION SECTION */
-    #solution {
-      padding: 80px 5%;
-      background: linear-gradient(180deg, transparent, rgba(96,234,123,0.03) 50%, transparent);
-    }
-
-    .solution-container {
-      max-width: 1000px;
-      margin: 0 auto;
+      padding: 120px 5% 80px;
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 64px;
       align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
     }
 
-    .solution-content h2 {
-      font-size: 2.5rem;
-      font-weight: 800;
-      line-height: 1.15;
+    .hero-left {}
+
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(255,77,77,0.1); border: 1px solid rgba(255,77,77,0.2);
+      padding: 5px 14px; border-radius: 100px;
+      font-size: 0.7rem; font-weight: 700;
+      color: var(--red); letter-spacing: 0.08em; text-transform: uppercase;
+      margin-bottom: 28px;
+    }
+    .hero-tag::before {
+      content: ''; width: 6px; height: 6px; border-radius: 50%;
+      background: var(--red);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    h1 {
+      font-size: clamp(2.2rem, 4vw, 3.6rem);
+      font-weight: 900;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
       margin-bottom: 24px;
-      letter-spacing: -0.02em;
     }
+    h1 em { font-style: normal; color: var(--green); }
 
-    .solution-content p {
-      font-size: 1rem;
+    .hero-desc {
+      font-size: 1.05rem;
       color: var(--muted);
-      margin-bottom: 24px;
-      line-height: 1.7;
+      line-height: 1.75;
+      margin-bottom: 40px;
+      max-width: 480px;
     }
 
-    .solution-list {
-      list-style: none;
-      margin-bottom: 32px;
-    }
+    .hero-cta-group { display: flex; flex-direction: column; gap: 16px; align-items: flex-start; }
 
-    .solution-list li {
-      padding: 12px 0;
-      padding-left: 32px;
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--green); color: #000;
+      font-weight: 700; font-size: 0.95rem;
+      padding: 16px 36px; border-radius: 100px;
+      text-decoration: none;
+      transition: all 0.25s;
+      box-shadow: 0 0 40px rgba(96,234,123,0.25);
+    }
+    .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(96,234,123,0.4); }
+
+    .hero-trust {
+      display: flex; gap: 20px; flex-wrap: wrap;
+    }
+    .trust-pill {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 0.78rem; color: var(--muted);
+    }
+    .trust-pill span { color: var(--green); font-weight: 700; }
+
+    /* Hero Right — VSL */
+    .hero-right {
       position: relative;
-      font-size: 0.95rem;
+    }
+    .vsl-wrap {
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid rgba(96,234,123,0.2);
+      box-shadow: 0 0 80px rgba(96,234,123,0.08);
+      background: #000;
+      aspect-ratio: 16/9;
+      position: relative;
+    }
+    .vsl-wrap iframe {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%; border: none;
+    }
+    .vsl-caption {
+      text-align: center;
+      margin-top: 14px;
+      font-size: 0.75rem;
+      color: var(--muted);
     }
 
-    .solution-list li::before {
-      content: '✓';
-      position: absolute;
-      left: 0;
-      color: var(--green);
-      font-weight: 700;
-      font-size: 1.2rem;
+    /* ── PAIN SECTION ── */
+    #pain {
+      padding: 80px 5%;
+      max-width: 1200px;
+      margin: 0 auto;
     }
 
-    .solution-image {
-      width: 100%;
-      height: 400px;
-      background: linear-gradient(135deg, rgba(96,234,123,0.1), rgba(96,234,123,0.05));
-      border-radius: 16px;
+    .section-label {
+      font-size: 0.68rem; font-weight: 700;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--green); margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+      font-weight: 900; line-height: 1.15;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+    }
+
+    .section-sub {
+      font-size: 1rem; color: var(--muted);
+      max-width: 540px; line-height: 1.7;
+      margin-bottom: 56px;
+    }
+
+    /* Compare table */
+    .compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .compare-col {
+      background: var(--surface);
       border: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 4rem;
+      border-radius: 16px;
+      padding: 32px;
+    }
+    .compare-col.bad { border-color: rgba(255,77,77,0.2); }
+    .compare-col.good { border-color: rgba(96,234,123,0.2); }
+
+    .compare-label {
+      font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      margin-bottom: 24px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .compare-label.bad { color: var(--red); }
+    .compare-label.good { color: var(--green); }
+
+    .compare-list { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+    .compare-list li {
+      display: flex; align-items: flex-start; gap: 12px;
+      font-size: 0.88rem; color: var(--muted); line-height: 1.5;
+    }
+    .compare-list li .icon { flex-shrink: 0; font-size: 1rem; margin-top: 1px; }
+
+    /* ── WHY SECTION ── */
+    #why {
+      padding: 80px 5%;
+      background: linear-gradient(180deg, transparent, rgba(96,234,123,0.03) 50%, transparent);
     }
 
-    /* CTA SECTION */
-    #cta {
+    .why-inner {
+      max-width: 1200px; margin: 0 auto;
+    }
+
+    .why-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-top: 48px;
+    }
+
+    .why-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px 28px;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+    .why-card:hover { border-color: rgba(96,234,123,0.25); transform: translateY(-4px); }
+
+    .why-num {
+      font-size: 2.8rem; font-weight: 900;
+      color: var(--green); line-height: 1;
+      margin-bottom: 12px; letter-spacing: -0.04em;
+    }
+    .why-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 10px; }
+    .why-card p { font-size: 0.85rem; color: var(--muted); line-height: 1.65; }
+
+    /* ── TESTIMONIOS ── */
+    #testi {
+      padding: 80px 5%;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .testi-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-top: 48px;
+    }
+
+    .testi-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .testi-card:hover { border-color: rgba(96,234,123,0.3); transform: translateY(-4px); }
+
+    .testi-thumb {
+      position: relative; aspect-ratio: 16/9;
+      background: #000; overflow: hidden;
+    }
+    .testi-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .testi-play {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.3);
+    }
+    .testi-play-btn {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: rgba(96,234,123,0.9);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+    }
+    .testi-body { padding: 20px; }
+    .testi-stars { color: #FFB700; font-size: 0.7rem; letter-spacing: 2px; margin-bottom: 10px; }
+    .testi-quote { font-size: 0.82rem; color: var(--muted); line-height: 1.6; margin-bottom: 14px; font-style: italic; }
+    .testi-name { font-size: 0.85rem; font-weight: 700; }
+    .testi-country { font-size: 0.72rem; color: var(--muted); }
+
+    /* ── CTA FINAL ── */
+    #final-cta {
       padding: 80px 5%;
       text-align: center;
     }
@@ -296,124 +300,132 @@
     .cta-box {
       max-width: 700px;
       margin: 0 auto;
-      padding: 64px 48px;
-      background: linear-gradient(135deg, rgba(96,234,123,0.1), rgba(96,234,123,0.05));
-      border: 1px solid var(--border);
-      border-radius: 20px;
+      padding: 72px 48px;
+      background: linear-gradient(135deg, rgba(96,234,123,0.09), rgba(96,234,123,0.03));
+      border: 1px solid rgba(96,234,123,0.18);
+      border-radius: 24px;
       position: relative;
       overflow: hidden;
     }
-
     .cta-box::before {
       content: '';
-      position: absolute;
-      top: -50%;
-      left: 50%;
+      position: absolute; top: -80px; left: 50%;
       transform: translateX(-50%);
-      width: 300px;
-      height: 300px;
-      background: radial-gradient(circle, rgba(96,234,123,0.1), transparent 70%);
-      border-radius: 50%;
+      width: 400px; height: 400px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(96,234,123,0.08), transparent 70%);
       pointer-events: none;
     }
-
     .cta-box > * { position: relative; z-index: 1; }
+    .cta-box h2 { font-size: 2.4rem; font-weight: 900; margin-bottom: 16px; line-height: 1.15; }
+    .cta-box h2 em { font-style: normal; color: var(--green); }
+    .cta-box p { font-size: 1rem; color: var(--muted); margin-bottom: 40px; }
+    .cta-fine { font-size: 0.75rem; color: var(--muted); margin-top: 20px; }
 
-    .cta-box h2 {
-      font-size: 2rem;
-      font-weight: 800;
-      margin-bottom: 16px;
-    }
-
-    .cta-box p {
-      font-size: 1rem;
-      color: var(--muted);
-      margin-bottom: 32px;
-    }
-
-    .btn-primary {
-      display: inline-block;
-      background: var(--green);
-      color: #000;
-      padding: 16px 48px;
-      border-radius: 100px;
-      font-weight: 700;
-      font-size: 0.95rem;
-      text-decoration: none;
-      transition: all 0.3s;
-      box-shadow: 0 0 30px rgba(96,234,123,0.3);
-    }
-
-    .btn-primary:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 12px 40px rgba(96,234,123,0.4);
-    }
-
-    .cta-subtext {
-      font-size: 0.8rem;
-      color: var(--muted);
-      margin-top: 20px;
-    }
-
-    /* FOOTER */
+    /* ── FOOTER ── */
     footer {
-      padding: 40px 5%;
-      text-align: center;
       border-top: 1px solid var(--border);
-      font-size: 0.85rem;
-      color: var(--muted);
+      padding: 32px 5%;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 16px;
+    }
+    .footer-logo { font-size: 0.95rem; font-weight: 800; }
+    .footer-logo span { color: var(--green); }
+    .footer-copy { font-size: 0.72rem; color: var(--muted); }
+
+    /* ── MOBILE CTA BAR ── */
+    #mobile-bar {
+      display: none;
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 90;
+      padding: 12px 20px 20px;
+      background: rgba(8,8,8,0.97);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid var(--border);
+      transform: translateY(100%);
+      transition: transform 0.4s;
+    }
+    #mobile-bar.show { transform: translateY(0); }
+    #mobile-bar a {
+      display: block; text-align: center;
+      background: var(--green); color: #000;
+      font-weight: 800; font-size: 0.95rem;
+      padding: 16px; border-radius: 14px;
+      text-decoration: none;
     }
 
-    /* MOBILE */
-    @media (max-width: 768px) {
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      #hero {
+        grid-template-columns: 1fr;
+        gap: 48px;
+        padding-top: 100px;
+        text-align: center;
+      }
+      .hero-desc { max-width: 100%; }
+      .hero-cta-group { align-items: center; }
+      .hero-trust { justify-content: center; }
+      .compare { grid-template-columns: 1fr; }
+      .why-grid { grid-template-columns: 1fr; }
+      .testi-grid { grid-template-columns: 1fr; }
+      #mobile-bar { display: block; }
+      body { padding-bottom: 80px; }
+      .cta-box { padding: 48px 24px; }
+      .cta-box h2 { font-size: 1.8rem; }
+    }
+
+    @media (max-width: 600px) {
       h1 { font-size: 2rem; }
-      .hero-sub { font-size: 0.95rem; }
-      #hero { padding: 60px 5% 40px; }
-      .solution-container { grid-template-columns: 1fr; gap: 40px; }
-      .solution-image { height: 300px; }
-      .solution-content h2 { font-size: 1.8rem; }
-      .cta-box { padding: 40px 24px; }
-      .problems-grid { gap: 24px; }
+      .why-grid { grid-template-columns: 1fr; gap: 16px; }
     }
-
-    /* ANIMATIONS */
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .fade-in { animation: fadeInUp 0.6s ease-out forwards; }
   </style>
 </head>
 <body>
 
+<!-- NAV -->
 <nav>
-  <div class="logo">Camelion<span>.</span></div>
-  <a href="/agendar" class="cta-nav">Más información →</a>
+  <div class="nav-logo">Camelion<span>.</span></div>
+  <a href="/agendar" class="nav-cta">Agendar reunión →</a>
 </nav>
 
+<!-- MOBILE BAR -->
+<div id="mobile-bar">
+  <a href="/agendar">Agendar reunión gratuita →</a>
+</div>
+
+<!-- HERO: SPLIT LAYOUT -->
 <section id="hero">
-  <div class="hero-overline">Para creadores de contenido y agencias</div>
+  <div class="hero-left">
+    <div class="hero-tag">Para agencias de marketing</div>
 
-  <h1>
-    Deja de perder<br/>
-    <em>cientos de horas</em><br/>
-    editando tus videos.
-  </h1>
+    <h1>
+      Tus editores te están<br/>
+      haciendo quedar<br/>
+      <em>mal con tus clientes.</em>
+    </h1>
 
-  <p class="hero-sub">
-    Enfocate en crear contenido. Nosotros nos encargamos de la edición.
-  </p>
+    <p class="hero-desc">
+      Editores que no cumplen deadlines, videos llenos de errores, y vos corriendo siempre a último momento. Hay una mejor forma.
+    </p>
 
-  <div id="vsl">
-    <script type="text/javascript">
-      var s=document.createElement("script");
-      s.src="https://scripts.converteai.net/lib/js/smartplayer-wc/v4/sdk.js";
-      s.async=true;
-      document.head.appendChild(s);
-    </script>
-    <div id="ifr_69381f228561d5e93fddc167_wrapper" style="margin:0 auto;width:100%;">
-      <div style="position:relative;padding:56.25% 0 0 0;" id="ifr_69381f228561d5e93fddc167_aspect">
+    <div class="hero-cta-group">
+      <a href="/agendar" class="btn-primary">Quiero hablar con Adrián →</a>
+      <div class="hero-trust">
+        <div class="trust-pill"><span>✓</span> Desde 2021</div>
+        <div class="trust-pill"><span>✓</span> Entrega en 48hs</div>
+        <div class="trust-pill"><span>✓</span> White-label total</div>
+        <div class="trust-pill"><span>✓</span> +10 países</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div class="vsl-wrap">
+      <script type="text/javascript">
+        var s=document.createElement("script");
+        s.src="https://scripts.converteai.net/lib/js/smartplayer-wc/v4/sdk.js";
+        s.async=true;
+        document.head.appendChild(s);
+      </script>
+      <div style="position:relative;padding:56.25% 0 0 0;">
         <iframe frameborder="0" allowfullscreen src="about:blank" id="ifr_69381f228561d5e93fddc167"
           style="position:absolute;top:0;left:0;width:100%;height:100%;"
           referrerpolicy="origin"
@@ -421,98 +433,108 @@
         </iframe>
       </div>
     </div>
-  </div>
-  <p class="vsl-label">▶️ Mira cómo podemos ayudarte (5 minutos)</p>
-
-  <a href="/agendar" class="btn-primary" style="margin-top: 40px;">Quiero saber más →</a>
-</section>
-
-<section id="problems">
-  <div style="text-align: center; margin-bottom: 48px;">
-    <h2 style="font-size: 2.2rem; margin-bottom: 16px;">El problema real</h2>
-    <p style="color: var(--muted); font-size: 1.05rem;">Probablemente te pasa uno de estos</p>
-  </div>
-
-  <div class="problems-grid">
-    <div class="problem-card">
-      <div class="problem-icon">⏱️</div>
-      <h3>Pierdes demasiado tiempo</h3>
-      <p>Pasás horas y horas en la compu editando, dejando de lado tareas mucho más rentables.</p>
-    </div>
-
-    <div class="problem-card">
-      <div class="problem-icon">😤</div>
-      <h3>Es agotador</h3>
-      <p>La edición es aburrida y cansadora. Querés crear contenido, no estar pegado a la pantalla.</p>
-    </div>
-
-    <div class="problem-card">
-      <div class="problem-icon">📉</div>
-      <h3>Afecta tu productividad</h3>
-      <p>Con la edición quitándote energía, baja tu calidad de contenido y crecimiento.</p>
-    </div>
+    <p class="vsl-caption">▶ Mirá cómo trabajamos — 5 minutos</p>
   </div>
 </section>
 
-<section id="testimonials" style="padding: 80px 5%; text-align: center;">
-  <div style="max-width: 900px; margin: 0 auto;">
-    <h2 style="font-size: 2.2rem; margin-bottom: 16px;">De verdad funciona</h2>
-    <p style="color: var(--muted); font-size: 1.05rem; margin-bottom: 56px;">Esto es lo que dicen quienes ya delegaron</p>
+<!-- PAIN: COMPARE -->
+<section id="pain">
+  <div class="section-label">El problema real</div>
+  <h2 class="section-title">Lo que le pasa a la mayoría<br/>de agencias con la edición</h2>
+  <p class="section-sub">Si alguna vez tuviste que disculparte con un cliente por un video, esto te va a sonar familiar.</p>
 
-    <div id="testi-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-bottom: 40px;">
-      <!-- Testimonials will be populated by JS -->
-    </div>
-
-    <div style="padding: 40px; background: var(--card); border: 1px solid var(--border); border-radius: 16px; margin-top: 40px;">
-      <p style="font-size: 0.95rem; color: var(--muted); margin-bottom: 16px;">✓ Más de 100 creadores ya confían en nosotros</p>
-      <p style="font-size: 0.9rem; color: var(--muted);">Desde 2021 ayudamos a creadores, filmmakers y agencias a recuperar su tiempo</p>
-    </div>
-  </div>
-</section>
-
-<section id="solution">
-  <div class="solution-container">
-    <div class="solution-content">
-      <h2>Entréganos la edición</h2>
-      <p>Desde 2021 ayudamos a creadores como vos a recuperar su tiempo y enfocarse en lo que realmente importa.</p>
-
-      <ul class="solution-list">
-        <li>Videos editados en 48 horas</li>
-        <li>Estándar de calidad consistente</li>
-        <li>Sin estar detrás de nadie</li>
-        <li>Tranquilidad garantizada</li>
+  <div class="compare">
+    <div class="compare-col bad">
+      <div class="compare-label bad">✕ &nbsp;Con editores freelancers</div>
+      <ul class="compare-list">
+        <li><span class="icon">😤</span>Entregan cuando quieren, no cuando vos necesitás</li>
+        <li><span class="icon">❌</span>Videos con errores, faltas de ortografía, mal montaje</li>
+        <li><span class="icon">⏳</span>Siempre corriendo a último momento antes de la entrega</li>
+        <li><span class="icon">💸</span>Pagás igual aunque el resultado sea una porquería</li>
+        <li><span class="icon">🔄</span>Tenés que estar encima de cada video manualmente</li>
+        <li><span class="icon">📉</span>Tu reputación con el cliente queda comprometida</li>
       </ul>
-
-      <p style="margin-top: 32px; font-size: 0.9rem; color: var(--green); font-weight: 600;">
-        ✓ Más de 100 creadores confían en nosotros
-      </p>
     </div>
-
-    <div class="solution-image">📹</div>
+    <div class="compare-col good">
+      <div class="compare-label good">✓ &nbsp;Con Camelion</div>
+      <ul class="compare-list">
+        <li><span class="icon">📅</span>Entrega garantizada en 48 horas, siempre</li>
+        <li><span class="icon">✅</span>Estándar de calidad consistente en cada video</li>
+        <li><span class="icon">😌</span>Vos confiás en el equipo y te enfocás en los clientes</li>
+        <li><span class="icon">💰</span>Costo fijo mensual, sin sorpresas ni extras</li>
+        <li><span class="icon">📋</span>Un solo punto de contacto para toda tu agencia</li>
+        <li><span class="icon">🚀</span>La reputación de tu agencia crece con cada entrega</li>
+      </ul>
+    </div>
   </div>
 </section>
 
-<section id="cta">
+<!-- WHY CAMELION -->
+<section id="why">
+  <div class="why-inner">
+    <div class="section-label">Por qué Camelion</div>
+    <h2 class="section-title">No somos un freelancer más.<br/>Somos tu equipo de edición.</h2>
+    <p class="section-sub">Tres razones concretas por las que agencias eligen trabajar con nosotros y no vuelven atrás.</p>
+
+    <div class="why-grid">
+      <div class="why-card">
+        <div class="why-num">2021</div>
+        <h3>5 años haciendo solo esto</h3>
+        <p>Edición de video para agencias y marcas personales es todo lo que hacemos. No somos una agencia que "también edita". Es nuestro único negocio.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-num">0</div>
+        <h3>Cero problemas de tu lado</h3>
+        <p>Yo gestiono a los editores. Si uno falla, lo resuelvo yo. Vos no tenés que salir a buscar un reemplazo, ni explicarle el estilo de cero a alguien nuevo.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-num">+6</div>
+        <h3>Editores entrenados a nuestro estilo</h3>
+        <p>En 2024 abrimos nuestra propia academia. Tenemos sobrecapacidad de editores formados internamente — no dependemos del mercado.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIOS -->
+<section id="testi">
+  <div class="section-label">Prueba social</div>
+  <h2 class="section-title">Lo que dicen quienes ya delegaron</h2>
+  <p class="section-sub">Creadores y agencias que decidieron parar de correr detrás de editores.</p>
+
+  <div class="testi-grid" id="testi-grid"></div>
+</section>
+
+<!-- CTA FINAL -->
+<section id="final-cta">
   <div class="cta-box">
-    <h2>Recupera tu tiempo</h2>
-    <p>Mirá el video arriba y después hacé clic en el botón. Te ofrecemos una evaluación gratis, sin compromiso.</p>
-    <a href="/agendar" class="btn-primary">Más información →</a>
-    <p class="cta-subtext">Reunión de 30 minutos • Sin costo • Planes desde $600/mes</p>
+    <h2>¿Tu agencia sigue<br/><em>corriendo a último momento?</em></h2>
+    <p>30 minutos. Sin compromiso. Te mostramos exactamente cómo trabajaríamos con vos.</p>
+    <a href="/agendar" class="btn-primary">Agendar reunión gratuita →</a>
+    <p class="cta-fine">Sin contrato · Sin permanencia · Respuesta en 24hs</p>
   </div>
 </section>
 
+<!-- FOOTER -->
 <footer>
-  <p>© 2026 Camelion Media • Edición de video para creadores de contenido<br/>
-  <a href="/agendar" style="color: var(--green); text-decoration: none;">Contacto</a> •
-  <a href="#" style="color: var(--muted); text-decoration: none;">Términos</a></p>
+  <div class="footer-logo">Camelion<span>.</span></div>
+  <div class="footer-copy">© 2026 Camelion Media · Buenos Aires, Argentina</div>
 </footer>
 
 <script>
+// Mobile bar
+window.addEventListener('scroll', () => {
+  document.getElementById('mobile-bar').classList.toggle('show', window.scrollY > 400);
+}, { passive: true });
+
 // Testimonials
 const testimonials = [
   { id: '832873870', name: 'Pablo Arango', country: 'España', flag: '🇪🇸', quote: 'Una de las mejores cosas que puede hacer cualquier emprendedor es delegar las cosas que otro puede hacer mejor.' },
   { id: '832874695', name: 'Marissa Belvis', country: 'Puerto Rico', flag: '🇵🇷', quote: 'Cuando sé que Adrián está a cargo de los videos, estoy tranquila porque entiende lo que nos gusta.' },
   { id: '858981646', name: 'Kika Rojas', country: 'Costa Rica', flag: '🇨🇷', quote: 'El contenido en redes sociales estaba siendo un cuello de botella y me estaba generando muchísimo estrés.' },
+  { id: '891932524', name: 'Gala Calero', country: 'España', flag: '🇪🇸', quote: 'Buscaba poder delegar la edición de mis videos y no ha sido sencillo encontrar gente confiable para trabajar.' },
+  { id: '898608902', name: 'Belu Guerín', country: 'Argentina', flag: '🇦🇷', quote: 'Antes estaba sobrepasada con los reels y no podía llevar a cabo todo por el tiempo que me llevaba.' },
+  { id: '957292263', name: 'Ana Moreno', country: 'España', flag: '🇪🇸', quote: 'Si buscás a alguien para la ayuda de tus videos, confía en Camelion Media.' },
 ];
 
 async function loadThumb(id) {
@@ -529,22 +551,18 @@ async function buildTestimonials() {
   for (const t of testimonials) {
     const thumb = await loadThumb(t.id);
     const card = document.createElement('div');
-    card.style.cssText = 'background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;cursor:pointer;transition:all 0.3s;';
+    card.className = 'testi-card';
     card.innerHTML = `
-      <div class="testi-thumb" style="position:relative;aspect-ratio:16/9;background:#000;overflow:hidden;">
-        ${thumb ? `<img src="${thumb}" alt="${t.name}" style="width:100%;height:100%;object-fit:cover;display:block;" loading="lazy">` : ''}
-        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.3);">
-          <div style="width:44px;height:44px;border-radius:50%;background:rgba(96,234,123,0.9);display:flex;align-items:center;justify-content:center;font-size:1.1rem;">▶</div>
-        </div>
+      <div class="testi-thumb">
+        ${thumb ? `<img src="${thumb}" alt="${t.name}" loading="lazy">` : ''}
+        <div class="testi-play"><div class="testi-play-btn">▶</div></div>
       </div>
-      <div style="padding:20px;">
-        <div style="color:#FFB700;font-size:0.7rem;letter-spacing:2px;margin-bottom:12px;">★★★★★</div>
-        <p style="font-size:0.8rem;color:var(--muted);line-height:1.6;margin-bottom:16px;font-style:italic;">"${t.quote}"</p>
-        <div style="font-size:0.85rem;font-weight:700;font-family:Poppins;">${t.name}</div>
-        <div style="font-size:0.75rem;color:var(--muted);">${t.flag} ${t.country}</div>
+      <div class="testi-body">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-quote">"${t.quote}"</p>
+        <div class="testi-name">${t.name}</div>
+        <div class="testi-country">${t.flag} ${t.country}</div>
       </div>`;
-    card.addEventListener('mouseenter', () => { card.style.borderColor = 'rgba(96,234,123,0.3)'; card.style.transform = 'translateY(-4px)'; });
-    card.addEventListener('mouseleave', () => { card.style.borderColor = 'var(--border)'; card.style.transform = ''; });
     card.addEventListener('click', () => {
       const thumbEl = card.querySelector('.testi-thumb');
       if (thumbEl.querySelector('iframe')) return;
@@ -553,28 +571,22 @@ async function buildTestimonials() {
       iframe.allow = 'autoplay; fullscreen';
       iframe.allowFullscreen = true;
       iframe.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border:none;';
+      thumbEl.style.position = 'relative';
       thumbEl.innerHTML = '';
       thumbEl.appendChild(iframe);
     });
     grid.appendChild(card);
   }
-}
-buildTestimonials();
 
-// Mobile responsive
-const testiGrid = document.getElementById('testi-grid');
-if (testiGrid) {
+  // Responsive grid
   const updateGrid = () => {
-    if (window.innerWidth <= 900) {
-      testiGrid.style.gridTemplateColumns = window.innerWidth <= 600 ? '1fr' : 'repeat(2, 1fr)';
-    } else {
-      testiGrid.style.gridTemplateColumns = 'repeat(3, 1fr)';
-    }
+    const w = window.innerWidth;
+    grid.style.gridTemplateColumns = w <= 600 ? '1fr' : w <= 900 ? 'repeat(2,1fr)' : 'repeat(3,1fr)';
   };
   updateGrid();
   window.addEventListener('resize', updateGrid);
 }
+buildTestimonials();
 </script>
-
 </body>
 </html>
