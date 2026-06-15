@@ -1,101 +1,46 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Camelion Media — Edición de Video Profesional</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-:root { --green: #60EA7B; --green-dim: rgba(96,234,123,0.10); --green-border: rgba(96,234,123,0.22); --bg: #0e1117; --bg2: #13171f; --bg3: #181d28; --border: rgba(255,255,255,0.07); --white: #f0f4ff; --gray: rgba(255,255,255,0.42); --font: 'Poppins', sans-serif; --radius: 14px; }
-html { scroll-behavior: smooth; }
-body { font-family: var(--font); background: var(--bg); color: var(--white); line-height: 1.6; -webkit-font-smoothing: antialiased; }
-nav { position: sticky; top: 0; z-index: 100; background: rgba(14,17,23,0.95); backdrop-filter: blur(18px); border-bottom: 1px solid var(--border); padding: 0 32px; height: 60px; display: flex; align-items: center; justify-content: space-between; }
-.nav-brand { display:flex; align-items:center; gap:8px; font-weight:900; font-size:18px; letter-spacing:-0.5px; }
-.nav-dot { width:9px; height:9px; border-radius:50%; background:var(--green); box-shadow:0 0 10px var(--green); }
-.nav-links { display:flex; gap:24px; }
-.nav-links a { font-size:13px; color:var(--gray); text-decoration:none; font-weight:600; transition:color 0.2s; }
-.nav-links a:hover { color:var(--green); }
-.hero { max-width: 980px; margin: 0 auto; padding: 120px 32px 80px; text-align: center; }
-.hero h1 { font-size: clamp(48px, 8vw, 72px); font-weight: 900; letter-spacing: -2px; line-height: 1.05; margin-bottom: 24px; }
-.hero h1 span { color: var(--green); }
-.hero p { font-size: 18px; color: var(--gray); max-width: 620px; margin: 0 auto 48px; line-height: 1.7; }
-.cta-buttons { display:flex; gap:16px; justify-content:center; flex-wrap:wrap; }
-.btn { padding:16px 40px; border-radius:10px; font-size:15px; font-weight:700; text-decoration:none; transition:all 0.2s; border:none; cursor:pointer; font-family:var(--font); }
-.btn-primary { background:var(--green); color:#000; }
-.btn-primary:hover { background:#5CD66A; box-shadow:0 8px 24px rgba(96,234,123,0.3); }
-.btn-secondary { background:transparent; color:var(--green); border:1px solid var(--green); }
-.btn-secondary:hover { background:var(--green-dim); }
-.content { max-width: 980px; margin: 0 auto; padding: 0 32px 120px; }
-.section-label { display:inline-flex; align-items:center; gap:6px; font-size:11px; font-weight:800; letter-spacing:2px; text-transform:uppercase; color:var(--green); margin-bottom:12px; }
-.section-label::before { content:''; width:18px; height:2px; background:var(--green); }
-h2 { font-size: 42px; font-weight:900; letter-spacing:-1px; margin-bottom:16px; }
-.section-sub { font-size:16px; color:var(--gray); margin-bottom:48px; max-width:660px; }
-.guides-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:24px; margin-bottom:80px; }
-.guide-card { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:40px 32px; text-align:center; transition:all 0.3s; }
-.guide-card:hover { border-color:var(--green); background:rgba(96,234,123,0.05); }
-.guide-icon { font-size:48px; margin-bottom:20px; }
-.guide-title { font-size:22px; font-weight:800; margin-bottom:12px; }
-.guide-desc { font-size:15px; color:var(--gray); margin-bottom:24px; }
-.guide-link { display:inline-block; padding:12px 28px; border-radius:8px; background:var(--green-dim); border:1px solid var(--green-border); color:var(--green); text-decoration:none; font-weight:700; font-size:14px; transition:all 0.2s; }
-.guide-link:hover { background:var(--green); color:#000; }
-footer { border-top:1px solid var(--border); text-align:center; padding:48px 32px; font-size:13px; color:var(--gray); }
-footer strong { color:var(--white); }
-@media (max-width:600px) { nav { padding:0 16px; } .hero { padding:80px 20px 60px; } .content { padding:0 20px 80px; } .cta-buttons { flex-direction:column; } }
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Camelion Media Landing</title>
+  <script>
+    (function() {
+      const COOKIE_NAME = 'camelion_variant';
+      const COOKIE_DURATION = 365;
+
+      function getCookie(name) {
+        const nameEQ = name + '=';
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          let c = cookies[i].trim();
+          if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length);
+        }
+        return null;
+      }
+
+      function setCookie(name, value, days) {
+        const date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        const expires = 'expires=' + date.toUTCString();
+        document.cookie = name + '=' + value + ';' + expires + ';path=/';
+      }
+
+      function getVariant() {
+        let variant = getCookie(COOKIE_NAME);
+        if (!variant) {
+          variant = Math.random() < 0.5 ? 'v1' : 'v2';
+          setCookie(COOKIE_NAME, variant, COOKIE_DURATION);
+        }
+        return variant;
+      }
+
+      const variant = getVariant();
+      window.location.href = '/' + variant + '/';
+    })();
+  </script>
 </head>
 <body>
-
-<nav>
-  <div class="nav-brand"><span class="nav-dot"></span>Camelion</div>
-  <div class="nav-links">
-    <a href="#guias">Guías</a>
-    <a href="mailto:adrianyvanoff14@hotmail.com">Contacto</a>
-  </div>
-</nav>
-
-<div class="hero">
-  <h1>Tu equipo de<br/><span>edición de video</span></h1>
-  <p>Camelion es una plataforma integral para gestionar proyectos de edición de video, conectando clientes, editores y closers en un flujo de trabajo sin fricciones.</p>
-  <div class="cta-buttons">
-    <a href="https://clientes.camelionmedia.com" class="btn btn-primary">Ir al Portal</a>
-    <a href="#guias" class="btn btn-secondary">Ver Guías</a>
-  </div>
-</div>
-
-<div class="content">
-  <div class="section-label">Acceso</div>
-  <h2 id="guias">Guías de Usuario</h2>
-  <p class="section-sub">Documentación completa para cada rol en la plataforma. Aprende a usar el portal, paso a paso.</p>
-
-  <div class="guides-grid">
-    <div class="guide-card">
-      <div class="guide-icon">📹</div>
-      <div class="guide-title">Guía para Clientes</div>
-      <div class="guide-desc">Aprende a subir videos, ver estado de ediciones, pedir correcciones y pagar.</div>
-      <a href="/guia-cliente.html" class="guide-link">Ver Guía →</a>
-    </div>
-
-    <div class="guide-card">
-      <div class="guide-icon">🎯</div>
-      <div class="guide-title">Guía para Editores</div>
-      <div class="guide-desc">Descubre cómo aceptar misiones, editar videos, responder correcciones y ganar dinero.</div>
-      <a href="/guia-editor.html" class="guide-link">Ver Guía →</a>
-    </div>
-
-    <div class="guide-card">
-      <div class="guide-icon">📊</div>
-      <div class="guide-title">Guía para Closers</div>
-      <div class="guide-desc">Todo sobre el dashboard de ventas, estadísticas y cómo registrar reuniones.</div>
-      <a href="/guia-closers.html" class="guide-link">Ver Guía →</a>
-    </div>
-  </div>
-</div>
-
-<footer>
-  <strong>Camelion Media</strong> — Plataforma de edición de video<br>
-  <span style="margin-top:8px;display:inline-block">© 2026 Camelion Media LLC. Todos los derechos reservados.</span>
-</footer>
-
+  <p>Redirecting...</p>
 </body>
 </html>
