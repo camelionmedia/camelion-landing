@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Deja de editar tus videos — Camelion</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <!-- Meta Pixel -->
   <script>
     !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -114,12 +114,23 @@
     }
 
     h1 {
+      font-family: 'Poppins', sans-serif;
       font-size: clamp(2.5rem, 8vw, 4.5rem);
-      font-weight: 800;
+      font-weight: 900;
       line-height: 1.1;
       letter-spacing: -0.02em;
       margin-bottom: 32px;
       max-width: 900px;
+    }
+
+    h2 {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 900;
+    }
+
+    h3 {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 800;
     }
 
     h1 em {
@@ -170,9 +181,17 @@
 
     .problems-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      grid-template-columns: repeat(3, 1fr);
       gap: 32px;
       margin-top: 48px;
+    }
+
+    @media (max-width: 900px) {
+      .problems-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 600px) {
+      .problems-grid { grid-template-columns: 1fr; }
     }
 
     .problem-card {
@@ -374,7 +393,7 @@
 </nav>
 
 <section id="hero">
-  <div class="hero-overline">Para creadores de contenido</div>
+  <div class="hero-overline">Para creadores de contenido y agencias</div>
 
   <h1>
     Deja de perder<br/>
@@ -404,12 +423,14 @@
     </div>
   </div>
   <p class="vsl-label">▶️ Mira cómo podemos ayudarte (5 minutos)</p>
+
+  <a href="/agendar" class="btn-primary" style="margin-top: 40px;">Quiero saber más →</a>
 </section>
 
 <section id="problems">
   <div style="text-align: center; margin-bottom: 48px;">
-    <h2 style="font-size: 2.2rem; font-weight: 800; margin-bottom: 16px;">El problema que seguro tenés</h2>
-    <p style="color: var(--muted); font-size: 1.05rem;">Esto suena familiar, ¿no?</p>
+    <h2 style="font-size: 2.2rem; margin-bottom: 16px;">El problema real</h2>
+    <p style="color: var(--muted); font-size: 1.05rem;">Probablemente te pasa uno de estos</p>
   </div>
 
   <div class="problems-grid">
@@ -429,6 +450,22 @@
       <div class="problem-icon">📉</div>
       <h3>Afecta tu productividad</h3>
       <p>Con la edición quitándote energía, baja tu calidad de contenido y crecimiento.</p>
+    </div>
+  </div>
+</section>
+
+<section id="testimonials" style="padding: 80px 5%; text-align: center;">
+  <div style="max-width: 900px; margin: 0 auto;">
+    <h2 style="font-size: 2.2rem; margin-bottom: 16px;">De verdad funciona</h2>
+    <p style="color: var(--muted); font-size: 1.05rem; margin-bottom: 56px;">Esto es lo que dicen quienes ya delegaron</p>
+
+    <div id="testi-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-bottom: 40px;">
+      <!-- Testimonials will be populated by JS -->
+    </div>
+
+    <div style="padding: 40px; background: var(--card); border: 1px solid var(--border); border-radius: 16px; margin-top: 40px;">
+      <p style="font-size: 0.95rem; color: var(--muted); margin-bottom: 16px;">✓ Más de 100 creadores ya confían en nosotros</p>
+      <p style="font-size: 0.9rem; color: var(--muted);">Desde 2021 ayudamos a creadores, filmmakers y agencias a recuperar su tiempo</p>
     </div>
   </div>
 </section>
@@ -469,6 +506,75 @@
   <a href="/agendar" style="color: var(--green); text-decoration: none;">Contacto</a> •
   <a href="#" style="color: var(--muted); text-decoration: none;">Términos</a></p>
 </footer>
+
+<script>
+// Testimonials
+const testimonials = [
+  { id: '832873870', name: 'Pablo Arango', country: 'España', flag: '🇪🇸', quote: 'Una de las mejores cosas que puede hacer cualquier emprendedor es delegar las cosas que otro puede hacer mejor.' },
+  { id: '832874695', name: 'Marissa Belvis', country: 'Puerto Rico', flag: '🇵🇷', quote: 'Cuando sé que Adrián está a cargo de los videos, estoy tranquila porque entiende lo que nos gusta.' },
+  { id: '858981646', name: 'Kika Rojas', country: 'Costa Rica', flag: '🇨🇷', quote: 'El contenido en redes sociales estaba siendo un cuello de botella y me estaba generando muchísimo estrés.' },
+];
+
+async function loadThumb(id) {
+  try {
+    const r = await fetch(`https://vimeo.com/api/oembed.json?url=https://vimeo.com/${id}`);
+    const d = await r.json();
+    return d.thumbnail_url ? d.thumbnail_url.replace(/_\d+x\d+(\.\w+)$/, '_640x360$1') : null;
+  } catch { return null; }
+}
+
+async function buildTestimonials() {
+  const grid = document.getElementById('testi-grid');
+  if (!grid) return;
+  for (const t of testimonials) {
+    const thumb = await loadThumb(t.id);
+    const card = document.createElement('div');
+    card.style.cssText = 'background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;cursor:pointer;transition:all 0.3s;';
+    card.innerHTML = `
+      <div class="testi-thumb" style="position:relative;aspect-ratio:16/9;background:#000;overflow:hidden;">
+        ${thumb ? `<img src="${thumb}" alt="${t.name}" style="width:100%;height:100%;object-fit:cover;display:block;" loading="lazy">` : ''}
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.3);">
+          <div style="width:44px;height:44px;border-radius:50%;background:rgba(96,234,123,0.9);display:flex;align-items:center;justify-content:center;font-size:1.1rem;">▶</div>
+        </div>
+      </div>
+      <div style="padding:20px;">
+        <div style="color:#FFB700;font-size:0.7rem;letter-spacing:2px;margin-bottom:12px;">★★★★★</div>
+        <p style="font-size:0.8rem;color:var(--muted);line-height:1.6;margin-bottom:16px;font-style:italic;">"${t.quote}"</p>
+        <div style="font-size:0.85rem;font-weight:700;font-family:Poppins;">${t.name}</div>
+        <div style="font-size:0.75rem;color:var(--muted);">${t.flag} ${t.country}</div>
+      </div>`;
+    card.addEventListener('mouseenter', () => { card.style.borderColor = 'rgba(96,234,123,0.3)'; card.style.transform = 'translateY(-4px)'; });
+    card.addEventListener('mouseleave', () => { card.style.borderColor = 'var(--border)'; card.style.transform = ''; });
+    card.addEventListener('click', () => {
+      const thumbEl = card.querySelector('.testi-thumb');
+      if (thumbEl.querySelector('iframe')) return;
+      const iframe = document.createElement('iframe');
+      iframe.src = `https://player.vimeo.com/video/${t.id}?autoplay=1&color=60EA7B&title=0&byline=0&portrait=0&dnt=1`;
+      iframe.allow = 'autoplay; fullscreen';
+      iframe.allowFullscreen = true;
+      iframe.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border:none;';
+      thumbEl.innerHTML = '';
+      thumbEl.appendChild(iframe);
+    });
+    grid.appendChild(card);
+  }
+}
+buildTestimonials();
+
+// Mobile responsive
+const testiGrid = document.getElementById('testi-grid');
+if (testiGrid) {
+  const updateGrid = () => {
+    if (window.innerWidth <= 900) {
+      testiGrid.style.gridTemplateColumns = window.innerWidth <= 600 ? '1fr' : 'repeat(2, 1fr)';
+    } else {
+      testiGrid.style.gridTemplateColumns = 'repeat(3, 1fr)';
+    }
+  };
+  updateGrid();
+  window.addEventListener('resize', updateGrid);
+}
+</script>
 
 </body>
 </html>
