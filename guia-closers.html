@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Camelion Closers — Guía del Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --green: #60EA7B;
+  --green-dim: rgba(96,234,123,0.10);
+  --green-border: rgba(96,234,123,0.22);
+  --blue: #60A0FF;
+  --gold: #FFD700;
+  --red: #FF5757;
+  --orange: #FF9500;
+  --bg: #0e1117;
+  --bg2: #13171f;
+  --bg3: #181d28;
+  --border: rgba(255,255,255,0.07);
+  --white: #f0f4ff;
+  --gray: rgba(255,255,255,0.42);
+  --font: 'Poppins', sans-serif;
+  --radius: 14px;
+  --content: 820px;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--white);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(14,17,23,0.85);
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 32px;
+  height: 60px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-brand { display:flex; align-items:center; gap:8px; font-weight:900; font-size:17px; letter-spacing:-0.5px; }
+.nav-dot { width:9px; height:9px; border-radius:50%; background:var(--green); box-shadow:0 0 10px var(--green); display:inline-block; }
+.nav-pill {
+  display:flex; align-items:center; gap:6px;
+  background: var(--green-dim); border:1px solid var(--green-border);
+  padding:5px 14px; border-radius:20px;
+  font-size:12px; font-weight:700; color:var(--green);
+}
+
+.hero {
+  max-width: var(--content);
+  margin: 0 auto;
+  padding: 72px 32px 56px;
+  text-align: center;
+}
+.hero-badge {
+  display:inline-flex; align-items:center; gap:6px;
+  background:var(--green-dim); border:1px solid var(--green-border);
+  padding:6px 16px; border-radius:20px;
+  font-size:11px; font-weight:700; color:var(--green); letter-spacing:1.5px; text-transform:uppercase;
+  margin-bottom:24px;
+}
+.hero h1 {
+  font-size: clamp(36px, 6vw, 58px);
+  font-weight: 900;
+  letter-spacing: -2px;
+  line-height: 1.05;
+  margin-bottom: 20px;
+}
+.hero h1 span { color: var(--green); }
+.hero p {
+  font-size: 17px;
+  color: var(--gray);
+  max-width: 520px;
+  margin: 0 auto 40px;
+  line-height: 1.7;
+}
+
+.closers-row {
+  display:grid; grid-template-columns:1fr 1fr; gap:16px;
+  max-width:440px; margin:0 auto;
+}
+.closer-card {
+  background:var(--bg2); border:1px solid var(--border);
+  border-radius:var(--radius); padding:20px;
+  display:flex; align-items:center; gap:12px;
+}
+.closer-avatar {
+  width:44px; height:44px; border-radius:50%;
+  background:var(--green-dim); border:2px solid var(--green-border);
+  display:flex; align-items:center; justify-content:center;
+  font-size:20px; flex-shrink:0;
+}
+.closer-name { font-weight:800; font-size:15px; }
+.closer-email { font-size:10px; color:var(--gray); margin-top:2px; word-break:break-all; }
+
+.content {
+  max-width: var(--content);
+  margin: 0 auto;
+  padding: 0 32px 80px;
+}
+
+.section-label {
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:10px; font-weight:800; letter-spacing:2px; text-transform:uppercase;
+  color:var(--green); margin-bottom:12px;
+}
+.section-label::before { content:''; width:18px; height:2px; background:var(--green); border-radius:2px; display:inline-block; }
+
+h2 {
+  font-size: 26px; font-weight:900; letter-spacing:-0.8px;
+  margin-bottom:8px;
+}
+.section-sub { font-size:14px; color:var(--gray); margin-bottom:32px; }
+
+.steps { display:flex; flex-direction:column; gap:0; margin-bottom:56px; }
+.step {
+  display:flex; gap:20px; align-items:flex-start;
+  padding:24px 0;
+  border-bottom:1px solid var(--border);
+}
+.step:last-child { border-bottom:none; }
+.step-num {
+  width:40px; height:40px; flex-shrink:0; border-radius:50%;
+  background:var(--green-dim); border:1.5px solid var(--green-border);
+  display:flex; align-items:center; justify-content:center;
+  font-weight:900; font-size:15px; color:var(--green);
+}
+.step-body h3 { font-size:16px; font-weight:800; margin-bottom:6px; }
+.step-body p { font-size:14px; color:var(--gray); line-height:1.7; }
+.step-body code {
+  display:inline-block; background:var(--bg3); border:1px solid var(--border);
+  padding:2px 10px; border-radius:6px; font-size:13px; color:var(--green);
+  font-family: monospace; margin-top:6px;
+}
+
+.tabs-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; margin-bottom:56px; }
+.tab-card {
+  background:var(--bg2); border:1px solid var(--border);
+  border-radius:var(--radius); padding:24px 20px;
+  position:relative; overflow:hidden;
+}
+.tab-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:3px;
+  background:var(--accent, var(--green));
+}
+.tab-icon { font-size:28px; margin-bottom:12px; display:block; }
+.tab-name { font-weight:900; font-size:16px; margin-bottom:8px; }
+.tab-desc { font-size:13px; color:var(--gray); line-height:1.65; }
+.tab-items { margin-top:14px; display:flex; flex-direction:column; gap:6px; }
+.tab-item {
+  display:flex; align-items:flex-start; gap:8px;
+  font-size:12px; color:var(--gray);
+}
+.tab-item::before { content:'→'; color:var(--accent, var(--green)); flex-shrink:0; font-weight:700; }
+
+.feature-block {
+  background:var(--bg2); border:1px solid var(--border);
+  border-radius:var(--radius); padding:28px; margin-bottom:16px;
+}
+.feature-block h3 { font-size:17px; font-weight:800; margin-bottom:8px; display:flex; align-items:center; gap:8px; }
+.feature-block p { font-size:14px; color:var(--gray); line-height:1.7; }
+
+.status-row { display:flex; flex-wrap:wrap; gap:10px; margin-top:14px; }
+.status-badge {
+  display:flex; align-items:center; gap:6px;
+  padding:6px 14px; border-radius:20px; font-size:12px; font-weight:700;
+}
+.status-badge .dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+
+.filter-demo { display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; }
+.filter-pill {
+  padding:7px 18px; border-radius:20px; font-size:12px; font-weight:700; cursor:default;
+}
+.filter-pill.active { background:var(--green-dim); border:1px solid var(--green-border); color:var(--green); }
+.filter-pill.inactive { background:var(--bg3); border:1px solid var(--border); color:var(--gray); }
+
+.diary-demo {
+  background:var(--bg3); border:1px solid var(--border);
+  border-radius:12px; padding:18px 20px; margin-top:14px;
+}
+.diary-label { font-size:10px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:6px; }
+.diary-text { font-size:13px; color:var(--gray); line-height:1.65; }
+
+.faq { display:flex; flex-direction:column; gap:12px; margin-bottom:56px; }
+.faq-item {
+  background:var(--bg2); border:1px solid var(--border);
+  border-radius:var(--radius); padding:20px 24px;
+}
+.faq-q { font-weight:800; font-size:14px; margin-bottom:8px; display:flex; align-items:center; gap:8px; }
+.faq-q span { color:var(--green); }
+.faq-a { font-size:13px; color:var(--gray); line-height:1.7; }
+
+.tips-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; margin-bottom:56px; }
+.tip {
+  background:var(--bg2); border:1px solid var(--border);
+  border-radius:12px; padding:18px 16px;
+}
+.tip-icon { font-size:22px; margin-bottom:10px; display:block; }
+.tip-title { font-weight:800; font-size:13px; margin-bottom:5px; color:var(--green); }
+.tip-text { font-size:12px; color:var(--gray); line-height:1.6; }
+
+footer {
+  border-top:1px solid var(--border);
+  text-align:center; padding:32px;
+  font-size:12px; color:var(--gray);
+}
+footer strong { color:var(--white); }
+
+.divider { border:none; border-top:1px solid var(--border); margin:56px 0; }
+
+@media (max-width:600px) {
+  nav { padding:0 16px; }
+  .hero { padding:48px 20px 40px; }
+  .content { padding:0 20px 60px; }
+  .closers-row { grid-template-columns:1fr; max-width:100%; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand"><span class="nav-dot"></span>Camelion</div>
+  <div class="nav-pill">🎯 Guía Closers</div>
+</nav>
+
+<div class="hero">
+  <div class="hero-badge">🔒 Acceso exclusivo · Equipo de ventas</div>
+  <h1>Tu portal de<br/><span>closers.</span></h1>
+  <p>Todo lo que necesitás saber para usar el portal, registrar tus reuniones y llevar tu rendimiento al siguiente nivel.</p>
+
+  <div class="closers-row">
+    <div class="closer-card">
+      <div class="closer-avatar">🦁</div>
+      <div>
+        <div class="closer-name">Mariano</div>
+        <div class="closer-email">marianomarzari083@gmail.com</div>
+      </div>
+    </div>
+    <div class="closer-card">
+      <div class="closer-avatar">🐯</div>
+      <div>
+        <div class="closer-name">Bruno</div>
+        <div class="closer-email">bruno_hernan_espinosa94@hotmail.com</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+
+  <div class="section-label">Primeros pasos</div>
+  <h2>Cómo entrar al portal</h2>
+  <p class="section-sub">El acceso es individual y privado. Nadie más puede ver tu panel.</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <h3>Abrí el portal</h3>
+        <p>Entrá desde cualquier navegador en tu computadora o celular.</p>
+        <code>clientes.camelionmedia.com</code>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <h3>Ingresá con tu cuenta</h3>
+        <p>Usá el email y contraseña que te dio Adrian. Si es la primera vez, él te manda un link para que crees tu propia contraseña.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <h3>Ya estás en tu panel</h3>
+        <p>El portal detecta automáticamente que sos closer y te lleva directo a tu dashboard — sin pasar por el portal de clientes ni el de editores.</p>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-label">Navegación</div>
+  <h2>Las 3 secciones del panel</h2>
+  <p class="section-sub">Cada tab tiene un propósito claro. Acá está todo lo que podés hacer en cada una.</p>
+
+  <div class="tabs-grid">
+    <div class="tab-card" style="--accent:#60EA7B">
+      <span class="tab-icon">📊</span>
+      <div class="tab-name">Stats</div>
+      <div class="tab-desc">Tu rendimiento del período seleccionado de un vistazo.</div>
+      <div class="tab-items">
+        <div class="tab-item">Facturación total</div>
+        <div class="tab-item">Tu comisión en dorado</div>
+        <div class="tab-item">Ventas cerradas</div>
+        <div class="tab-item">Tasa de cierre %</div>
+      </div>
+    </div>
+
+    <div class="tab-card" style="--accent:#60A0FF">
+      <span class="tab-icon">📋</span>
+      <div class="tab-name">Reuniones</div>
+      <div class="tab-desc">Todas tus llamadas del período con estado y monto.</div>
+      <div class="tab-items">
+        <div class="tab-item">Nombre y país del lead</div>
+        <div class="tab-item">Fecha de reunión</div>
+        <div class="tab-item">Estado: cerrado / no cerrado</div>
+        <div class="tab-item">Monto si se cerró</div>
+      </div>
+    </div>
+
+    <div class="tab-card" style="--accent:#FF9500">
+      <span class="tab-icon">📖</span>
+      <div class="tab-name">Diario</div>
+      <div class="tab-desc">Tu espacio privado de reflexión. Solo vos lo ves.</div>
+      <div class="tab-items">
+        <div class="tab-item">Qué pasó en cada reunión</div>
+        <div class="tab-item">Qué aprendiste</div>
+        <div class="tab-item">Podés editar cualquier nota</div>
+        <div class="tab-item">Privado — nadie más lo ve</div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-label">Funcionalidades</div>
+  <h2>En detalle</h2>
+  <p class="section-sub">Todo lo que necesitás entender para sacarle el máximo al portal.</p>
+
+  <div class="feature-block">
+    <h3>🗓️ Filtro por período</h3>
+    <p>Arriba de todo hay botones para cambiar el período. Todas las stats se actualizan al instante.</p>
+    <div class="filter-demo">
+      <div class="filter-pill active">Todo</div>
+      <div class="filter-pill inactive">Feb 26</div>
+      <div class="filter-pill inactive">Mar 26</div>
+      <div class="filter-pill inactive">Abr 26</div>
+    </div>
+  </div>
+
+  <div class="feature-block">
+    <h3>🔴🟢⚫ Estados de reunión</h3>
+    <p>Cada llamada tiene un estado visual para identificar rápido qué pasó.</p>
+    <div class="status-row">
+      <div class="status-badge" style="background:rgba(96,234,123,0.1);border:1px solid rgba(96,234,123,0.25);color:#60EA7B">
+        <div class="dot" style="background:#60EA7B"></div> ✅ Cerrado
+      </div>
+      <div class="status-badge" style="background:rgba(255,87,87,0.1);border:1px solid rgba(255,87,87,0.25);color:#FF5757">
+        <div class="dot" style="background:#FF5757"></div> ❌ No cerrado
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-label">Consejos</div>
+  <h2>Cómo aprovecharlo al máximo</h2>
+  <p class="section-sub">Pequeños hábitos que hacen una diferencia grande.</p>
+
+  <div class="tips-grid">
+    <div class="tip">
+      <span class="tip-icon">⚡</span>
+      <div class="tip-title">Anotá el mismo día</div>
+      <div class="tip-text">Completá el diario justo después de cada llamada. Los detalles se olvidan rápido.</div>
+    </div>
+    <div class="tip">
+      <span class="tip-icon">📈</span>
+      <div class="tip-title">Revisá tu tasa</div>
+      <div class="tip-text">Una vez por semana mirá el % y compará con períodos anteriores.</div>
+    </div>
+    <div class="tip">
+      <span class="tip-icon">🏆</span>
+      <div class="tip-title">Usá el ranking</div>
+      <div class="tip-text">No es para presionarte, es para motivarte. Ve los números del otro closer.</div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-label">Preguntas frecuentes</div>
+  <h2>FAQ</h2>
+
+  <div class="faq">
+    <div class="faq-item">
+      <div class="faq-q"><span>?</span> ¿Los clientes pueden ver mi panel?</div>
+      <div class="faq-a">No. El portal detecta automáticamente que sos closer y te muestra tu dashboard exclusivo.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q"><span>?</span> ¿El otro closer puede leer mi diario?</div>
+      <div class="faq-a">No. El diario solo muestra tus reuniones. Cada closer solo ve sus propias notas.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q"><span>?</span> ¿Cada cuánto se actualizan los datos?</div>
+      <div class="faq-a">Los datos son en tiempo real. Si se cargó una reunión nueva, aparece al instante.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q"><span>?</span> ¿Puedo editar notas viejas?</div>
+      <div class="faq-a">Sí, en cualquier momento. Sin límite de ediciones.</div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div style="font-size:22px;margin-bottom:10px">🦎</div>
+  <strong>Camelion Media</strong> · Portal interno de Closers<br>
+  <span style="margin-top:6px;display:inline-block">¿Dudas? Escribile a Adrian</span>
+</footer>
+
+</body>
+</html>
