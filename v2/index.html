@@ -5,7 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Camelion para Agencias — Edición de video sin drama</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800;900&display=swap" rel="stylesheet" />
   <!-- Meta Pixel -->
   <script>
     !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -321,6 +322,40 @@
     .cta-box p { font-size: 1rem; color: var(--muted); margin-bottom: 40px; }
     .cta-fine { font-size: 0.75rem; color: var(--muted); margin-top: 20px; }
 
+    /* ── NOTIFICATION POPUP ── */
+    #notif {
+      position: fixed;
+      bottom: 100px; left: 20px;
+      z-index: 200;
+      background: rgba(17,17,19,0.97);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 14px;
+      padding: 12px 16px;
+      display: flex; align-items: center; gap: 12px;
+      max-width: 280px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+      transform: translateY(20px);
+      opacity: 0;
+      transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s;
+      pointer-events: none;
+    }
+    #notif.show { transform: translateY(0); opacity: 1; }
+    .notif-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--green);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.8rem; font-weight: 800; color: #000; flex-shrink: 0;
+    }
+    .notif-name { font-size: 0.78rem; font-weight: 700; margin-bottom: 2px; }
+    .notif-desc { font-size: 0.68rem; color: var(--muted); }
+    .notif-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--green); flex-shrink: 0;
+      box-shadow: 0 0 6px var(--green);
+      animation: pulse 2s infinite;
+    }
+
     /* ── FOOTER ── */
     footer {
       border-top: 1px solid var(--border);
@@ -389,6 +424,16 @@
 <!-- MOBILE BAR -->
 <div id="mobile-bar">
   <a href="/agendar">Agendar reunión gratuita →</a>
+</div>
+
+<!-- NOTIFICATION POPUP -->
+<div id="notif">
+  <div class="notif-avatar" id="notif-avatar">JM</div>
+  <div>
+    <div class="notif-name" id="notif-name">Jovany Marrero</div>
+    <div class="notif-desc">Acaba de agendar su reunión</div>
+  </div>
+  <div class="notif-dot"></div>
 </div>
 
 <!-- HERO: SPLIT LAYOUT -->
@@ -509,7 +554,7 @@
 <section id="final-cta">
   <div class="cta-box">
     <h2>¿Tu agencia sigue<br/><em>corriendo a último momento?</em></h2>
-    <p>30 minutos. Sin compromiso. Te mostramos exactamente cómo trabajaríamos con vos.</p>
+    <p>60 minutos. Sin compromiso. Te mostramos exactamente cómo trabajaríamos con vos.</p>
     <a href="/agendar" class="btn-primary">Agendar reunión gratuita →</a>
     <p class="cta-fine">Sin contrato · Sin permanencia · Respuesta en 24hs</p>
   </div>
@@ -526,6 +571,36 @@
 window.addEventListener('scroll', () => {
   document.getElementById('mobile-bar').classList.toggle('show', window.scrollY > 400);
 }, { passive: true });
+
+// Rotating notifications
+const notifPeople = [
+  { name: 'Martín Sosa',      initials: 'MS' },
+  { name: 'Laura Quintero',   initials: 'LQ' },
+  { name: 'Diego Ferreyra',   initials: 'DF' },
+  { name: 'Camila Noriega',   initials: 'CN' },
+  { name: 'Sebastián Vidal',  initials: 'SV' },
+  { name: 'Valentina Cruz',   initials: 'VC' },
+  { name: 'Andrés Romero',    initials: 'AR' },
+  { name: 'Natalia Ibarra',   initials: 'NI' },
+  { name: 'Facundo Ríos',     initials: 'FR' },
+  { name: 'Sofía Menéndez',   initials: 'SM' },
+];
+const notifEl    = document.getElementById('notif');
+const notifName  = document.getElementById('notif-name');
+const notifAvatar = document.getElementById('notif-avatar');
+let notifIdx = 0;
+
+function showNotif() {
+  const p = notifPeople[notifIdx % notifPeople.length];
+  notifName.textContent  = p.name;
+  notifAvatar.textContent = p.initials;
+  notifEl.classList.add('show');
+  setTimeout(() => notifEl.classList.remove('show'), 4000);
+  notifIdx++;
+}
+
+// First one after 4s, then every 12s
+setTimeout(() => { showNotif(); setInterval(showNotif, 12000); }, 4000);
 
 // Testimonials
 const testimonials = [
