@@ -146,6 +146,15 @@
       background: var(--card);
       box-shadow: 0 0 48px rgba(96,234,123,0.06), 0 0 1px rgba(96,234,123,0.3);
     }
+    .tz-note {
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-align: center;
+      margin-bottom: 14px;
+      line-height: 1.5;
+    }
+    .tz-note strong { color: var(--green); }
+
     .calendar-card iframe {
       display: block;
       width: 100%;
@@ -224,6 +233,9 @@
 </div>
 
 <div class="calendar-section">
+  <p class="tz-note">
+    &#127760; Los horarios se muestran en Argentina (GMT-3). Si sos de otro pa&iacute;s, busc&aacute; el campo <strong>&ldquo;Zona horaria&rdquo;</strong> debajo del calendario y eleg&iacute; la tuya para ver los horarios correctos.
+  </p>
   <div class="calendar-card">
     <iframe src="https://api.leadconnectorhq.com/widget/booking/wvajZpctyOxaVy1WSPJj" scrolling="no" id="wvajZpctyOxaVy1WSPJj_1781110231803"></iframe>
   </div>
