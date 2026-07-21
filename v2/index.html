@@ -18,6 +18,66 @@
     fbq('track', 'PageView');
   </script>
   <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1226630459322247&ev=PageView&noscript=1"/></noscript>
+  <script>
+    // Conversion tracking for the inline GHL calendar (v2 has no separate
+    // /agendar or /gracias step — everything happens on this one page).
+    (function() {
+      var initiateFired = false;
+      var scheduleFired = false;
+
+      function fireInitiateCheckout() {
+        if (initiateFired) return;
+        initiateFired = true;
+        fbq('track', 'InitiateCheckout');
+      }
+
+      // InitiateCheckout = el usuario llegó a ver el calendario (intención alta)
+      document.addEventListener('DOMContentLoaded', function() {
+        var calSection = document.getElementById('agendar');
+        if (!calSection || !('IntersectionObserver' in window)) return;
+        var obs = new IntersectionObserver(function(entries) {
+          entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+              fireInitiateCheckout();
+              obs.disconnect();
+            }
+          });
+        }, { threshold: 0.3 });
+        obs.observe(calSection);
+      });
+
+      // Schedule = el widget de GHL confirma que se agendó la reunión.
+      // El widget de leadconnectorhq/msgsndr manda un postMessage al parent
+      // cuando se completa la reserva; detectamos por contenido en vez de
+      // por una forma exacta porque el schema no está documentado públicamente.
+      window.addEventListener('message', function(event) {
+        if (scheduleFired) return;
+        var raw;
+        try { raw = JSON.stringify(event.data); } catch (e) { raw = String(event.data); }
+        if (!raw) return;
+        var looksLikeBooking = /book|appointment|schedul|confirm/i.test(raw)
+          && !/iframeHeight|widget_size|resize/i.test(raw);
+        if (!looksLikeBooking) return;
+
+        scheduleFired = true;
+        var contactId = (event.data && (event.data.contact_id || event.data.contactId)) || undefined;
+        var eventId = contactId ? ('schedule_' + contactId) : ('schedule_' + Date.now());
+        fbq('track', 'Schedule', {}, { eventID: eventId });
+
+        // Espejo server-side para deduplicar contra ad blockers / iOS ITP
+        fetch('/api/capi', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contact_id: contactId,
+            email: event.data && (event.data.email || event.data.contact_email),
+            phone: event.data && (event.data.phone || event.data.contact_phone),
+            event_source_url: location.href,
+          }),
+        }).catch(function() {});
+      });
+    })();
+  </script>
 
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -607,11 +667,21 @@
 </footer>
 
 <script>
-// Pass UTMs + landing_variant to calendar iframe
+// Pass UTMs + landing_variant + Meta click/browser IDs to calendar iframe
 (function() {
+  function readCookie(name) {
+    var match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
+    return match ? decodeURIComponent(match[1]) : null;
+  }
   var params = new URLSearchParams(window.location.search);
   var cookie = document.cookie.split(';').map(c=>c.trim()).find(c=>c.startsWith('camelion_variant='));
   if (cookie) params.set('landing_variant', cookie.split('=')[1]);
+  var fbp = readCookie('_fbp');
+  var fbc = readCookie('_fbc');
+  var fbclid = params.get('fbclid');
+  if (fbp) params.set('fbp', fbp);
+  if (fbc) params.set('fbc', fbc);
+  else if (fbclid) params.set('fbc', 'fb.1.' + Date.now() + '.' + fbclid);
   var qs = params.toString();
   if (!qs) return;
   var cal = document.getElementById('cal-iframe');
