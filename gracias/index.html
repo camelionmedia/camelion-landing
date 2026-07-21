@@ -16,7 +16,14 @@
     fbq('init', '1226630459322247');
     fbq('track', 'PageView');
     // Schedule = agenda confirmada (evento de mayor valor del embudo)
-    fbq('track', 'Schedule');
+    // event_id determinístico (basado en contact_id de GHL) para deduplicar
+    // con el evento espejo que manda el webhook de GHL a Meta CAPI (/api/capi)
+    (function() {
+      var params = new URLSearchParams(window.location.search);
+      var contactId = params.get('contact_id');
+      var eventId = contactId ? 'schedule_' + contactId : ('schedule_' + Date.now() + '_' + Math.random().toString(36).slice(2));
+      fbq('track', 'Schedule', {}, { eventID: eventId });
+    })();
   </script>
   <noscript><img height="1" width="1" style="display:none"
     src="https://www.facebook.com/tr?id=1226630459322247&ev=Schedule&noscript=1"/></noscript>
