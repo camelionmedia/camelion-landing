@@ -22,6 +22,7 @@
       document.getElementById('ghl').src = base + (qs ? '?' + qs : '');
     })();
   </script>
+  <script>fetch('/api/track-visit', { method: 'POST' }).catch(() => {});</script>
   <script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>
