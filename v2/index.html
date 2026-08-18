@@ -18,43 +18,9 @@
     fbq('track', 'PageView');
   </script>
   <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1226630459322247&ev=PageView&noscript=1"/></noscript>
-  <script>
-    // Conversion tracking para el calendario embebido de v2.
-    //
-    // OJO: el evento "Schedule" via postMessage se sacó el 2026-08-18 —
-    // la detección por contenido (regex sobre mensajes del iframe de GHL)
-    // disparaba en ~91% de las visitas, no solo en reservas reales (el
-    // widget manda mensajes internos de carga/navegación que matcheaban
-    // el patrón). El reemplazo confiable es server-side: un workflow de
-    // GHL con el trigger real "Cita reservada por el cliente" pegándole
-    // a /api/capi con action=camelion-schedule-capi en camelion-portal.
-    // No se recupera Schedule client-side hasta tener otra forma
-    // verificada de detectar la reserva real desde el iframe.
-    (function() {
-      var initiateFired = false;
-
-      function fireInitiateCheckout() {
-        if (initiateFired) return;
-        initiateFired = true;
-        fbq('track', 'InitiateCheckout');
-      }
-
-      // InitiateCheckout = el usuario llegó a ver el calendario (intención alta)
-      document.addEventListener('DOMContentLoaded', function() {
-        var calSection = document.getElementById('agendar');
-        if (!calSection || !('IntersectionObserver' in window)) return;
-        var obs = new IntersectionObserver(function(entries) {
-          entries.forEach(function(entry) {
-            if (entry.isIntersecting) {
-              fireInitiateCheckout();
-              obs.disconnect();
-            }
-          });
-        }, { threshold: 0.3 });
-        obs.observe(calSection);
-      });
-    })();
-  </script>
+  <!-- Conversion tracking (InitiateCheckout + Schedule) sacado el 2026-08-18
+       a pedido del cliente, mientras se define un reemplazo confiable para
+       ambos. Solo queda PageView del pixel base de arriba. -->
 
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
