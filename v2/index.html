@@ -19,11 +19,19 @@
   </script>
   <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1226630459322247&ev=PageView&noscript=1"/></noscript>
   <script>
-    // Conversion tracking for the inline GHL calendar (v2 has no separate
-    // /agendar or /gracias step — everything happens on this one page).
+    // Conversion tracking para el calendario embebido de v2.
+    //
+    // OJO: el evento "Schedule" via postMessage se sacó el 2026-08-18 —
+    // la detección por contenido (regex sobre mensajes del iframe de GHL)
+    // disparaba en ~91% de las visitas, no solo en reservas reales (el
+    // widget manda mensajes internos de carga/navegación que matcheaban
+    // el patrón). El reemplazo confiable es server-side: un workflow de
+    // GHL con el trigger real "Cita reservada por el cliente" pegándole
+    // a /api/capi con action=camelion-schedule-capi en camelion-portal.
+    // No se recupera Schedule client-side hasta tener otra forma
+    // verificada de detectar la reserva real desde el iframe.
     (function() {
       var initiateFired = false;
-      var scheduleFired = false;
 
       function fireInitiateCheckout() {
         if (initiateFired) return;
@@ -44,37 +52,6 @@
           });
         }, { threshold: 0.3 });
         obs.observe(calSection);
-      });
-
-      // Schedule = el widget de GHL confirma que se agendó la reunión.
-      // El widget de leadconnectorhq/msgsndr manda un postMessage al parent
-      // cuando se completa la reserva; detectamos por contenido en vez de
-      // por una forma exacta porque el schema no está documentado públicamente.
-      window.addEventListener('message', function(event) {
-        if (scheduleFired) return;
-        var raw;
-        try { raw = JSON.stringify(event.data); } catch (e) { raw = String(event.data); }
-        if (!raw) return;
-        var looksLikeBooking = /book|appointment|schedul|confirm/i.test(raw)
-          && !/iframeHeight|widget_size|resize/i.test(raw);
-        if (!looksLikeBooking) return;
-
-        scheduleFired = true;
-        var contactId = (event.data && (event.data.contact_id || event.data.contactId)) || undefined;
-        var eventId = contactId ? ('schedule_' + contactId) : ('schedule_' + Date.now());
-        fbq('track', 'Schedule', {}, { eventID: eventId });
-
-        // Espejo server-side para deduplicar contra ad blockers / iOS ITP
-        fetch('/api/capi', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contact_id: contactId,
-            email: event.data && (event.data.email || event.data.contact_email),
-            phone: event.data && (event.data.phone || event.data.contact_phone),
-            event_source_url: location.href,
-          }),
-        }).catch(function() {});
       });
     })();
   </script>
@@ -272,6 +249,68 @@
     }
     .compare-list li .icon { flex-shrink: 0; font-size: 1rem; margin-top: 1px; }
 
+    /* ── CÓMO FUNCIONA: 4 pasos, un ícono grande cada uno ── */
+    #how { padding: 80px 5% 100px; max-width: 1200px; margin: 0 auto; }
+    .how-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-top: 64px;
+      align-items: start;
+    }
+    .how-step { text-align: center; position: relative; }
+    .how-arrow {
+      display: none;
+      position: absolute;
+      top: 62px;
+      right: -14px;
+      width: 28px;
+      font-size: 1.3rem;
+      color: rgba(96,234,123,0.35);
+      z-index: 2;
+    }
+    .how-stage { perspective: 1200px; margin-bottom: 24px; }
+    .how-mock {
+      position: relative;
+      margin: 0 auto;
+      width: 128px; height: 128px;
+      background: linear-gradient(155deg, #14161a 0%, #0a0a0c 100%);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 28px;
+      display: flex; align-items: center; justify-content: center;
+      transform: rotateY(-10deg) rotateX(5deg);
+      transform-style: preserve-3d;
+      transition: transform 0.5s cubic-bezier(0.16,1,0.3,1);
+      box-shadow:
+        16px 26px 46px -16px rgba(0,0,0,0.65),
+        0 0 46px rgba(96,234,123,0.14);
+      overflow: hidden;
+    }
+    .how-step:hover .how-mock { transform: rotateY(-4deg) rotateX(2deg) scale(1.05); }
+    .how-mock::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(125deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0) 32%, rgba(255,255,255,0) 68%, rgba(96,234,123,0.08) 100%);
+      pointer-events: none;
+    }
+    .how-icon { font-size: 3rem; line-height: 1; filter: drop-shadow(0 0 18px rgba(96,234,123,0.35)); }
+    .how-badge {
+      display: inline-block;
+      font-size: 0.68rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 10px;
+    }
+    .how-word { font-size: 1.3rem; font-weight: 900; letter-spacing: -0.02em; margin-bottom: 8px; }
+    .how-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.6; max-width: 200px; margin: 0 auto; }
+
+    @media (min-width: 901px) { .how-arrow { display: block; } }
+    @media (max-width: 900px) {
+      .how-grid { grid-template-columns: repeat(2, 1fr); gap: 48px 20px; }
+    }
+    @media (max-width: 520px) {
+      .how-grid { grid-template-columns: 1fr; max-width: 260px; margin-left: auto; margin-right: auto; gap: 48px; }
+    }
+
     /* ── WHY SECTION ── */
     #why {
       padding: 80px 5%;
@@ -315,9 +354,12 @@
 
     .testi-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(2, 1fr);
       gap: 24px;
       margin-top: 48px;
+      max-width: 780px;
+      margin-left: auto;
+      margin-right: auto;
     }
 
     .testi-card {
@@ -603,6 +645,54 @@
   </div>
 </section>
 
+<!-- CÓMO FUNCIONA -->
+<section id="how">
+  <div class="section-label">El proceso</div>
+  <h2 class="section-title">4 pasos. Así de simple.</h2>
+  <p class="section-sub">Desde que tu agencia manda el material hasta que lo entregás al cliente.</p>
+
+  <div class="how-grid">
+    <div class="how-step">
+      <div class="how-arrow">→</div>
+      <div class="how-stage">
+        <div class="how-mock"><span class="how-icon">📤</span></div>
+      </div>
+      <div class="how-badge">Paso 1</div>
+      <div class="how-word">Subida</div>
+      <div class="how-desc">Cargás el pedido en el portal con el material y el brief. Dos minutos.</div>
+    </div>
+
+    <div class="how-step">
+      <div class="how-arrow">→</div>
+      <div class="how-stage">
+        <div class="how-mock"><span class="how-icon">🎬</span></div>
+      </div>
+      <div class="how-badge">Paso 2</div>
+      <div class="how-word">Edición</div>
+      <div class="how-desc">El editor especializado en ese proyecto lo toma y empieza al instante.</div>
+    </div>
+
+    <div class="how-step">
+      <div class="how-arrow">→</div>
+      <div class="how-stage">
+        <div class="how-mock"><span class="how-icon">⏱️</span></div>
+      </div>
+      <div class="how-badge">Paso 3</div>
+      <div class="how-word">Revisión</div>
+      <div class="how-desc">En 48hs lo tenés listo para ver y pedir ajustes si hace falta.</div>
+    </div>
+
+    <div class="how-step">
+      <div class="how-stage">
+        <div class="how-mock"><span class="how-icon">✅</span></div>
+      </div>
+      <div class="how-badge">Paso 4</div>
+      <div class="how-word">Entrega</div>
+      <div class="how-desc">Descargás el archivo final y lo entregás con tu marca.</div>
+    </div>
+  </div>
+</section>
+
 <!-- WHY CAMELION -->
 <section id="why">
   <div class="why-inner">
@@ -731,6 +821,8 @@ const testimonials = [
   { id: '891932524', name: 'Gala Calero', country: 'España', flag: '🇪🇸', quote: 'Buscaba poder delegar la edición de mis videos y no ha sido sencillo encontrar gente confiable para trabajar.' },
   { id: '898608902', name: 'Belu Guerín', country: 'Argentina', flag: '🇦🇷', quote: 'Antes estaba sobrepasada con los reels y no podía llevar a cabo todo por el tiempo que me llevaba.' },
   { id: '957292263', name: 'Ana Moreno', country: 'España', flag: '🇪🇸', quote: 'Si buscás a alguien para la ayuda de tus videos, confía en Camelion Media.' },
+  { id: '1033883453', name: 'Jovany Marrero', country: 'Puerto Rico', flag: '🇵🇷', quote: 'Si hay alguien que se le hacía difícil delegar sus clientes VIP era a mí hasta que conocí a Adrián.' },
+  { id: '1216825839', name: 'Yosvany Guerra', country: 'España', flag: '🇪🇸', quote: 'Si diría 3 cosas a destacar sería la velocidad, la calidad y que entienden perfectamente el tipo de cliente al que va dirigido.' },
 ];
 
 async function loadThumb(id) {
@@ -777,7 +869,7 @@ async function buildTestimonials() {
   // Responsive grid
   const updateGrid = () => {
     const w = window.innerWidth;
-    grid.style.gridTemplateColumns = w <= 600 ? '1fr' : w <= 900 ? 'repeat(2,1fr)' : 'repeat(3,1fr)';
+    grid.style.gridTemplateColumns = w <= 600 ? '1fr' : 'repeat(2,1fr)';
   };
   updateGrid();
   window.addEventListener('resize', updateGrid);
