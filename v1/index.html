@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Camelion — Deja de perder tiempo editando tus videos</title>
+  <title>Camelion — Tu techo no es la demanda, es la edición</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800;900&display=swap" rel="stylesheet" />
@@ -122,6 +122,11 @@
       box-shadow: 0 0 40px rgba(96,234,123,0.25);
     }
     .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(96,234,123,0.4); }
+
+    .cta-filter {
+      font-size: 0.78rem; color: var(--muted); line-height: 1.5;
+      max-width: 380px; margin: 0;
+    }
 
     .hero-trust { display: flex; gap: 16px; flex-wrap: wrap; }
     .trust-pill { display: flex; align-items: center; gap: 6px; font-size: 0.72rem; color: var(--muted); white-space: nowrap; }
@@ -276,6 +281,38 @@
     .testi-name { font-size: 0.85rem; font-weight: 700; }
     .testi-country { font-size: 0.72rem; color: var(--muted); }
 
+    /* ── CALIFICADOR ── */
+    #fit { padding: 0 5% 80px; max-width: 1200px; margin: 0 auto; }
+    .fit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .fit-col {
+      border-radius: 16px; padding: 28px 30px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.02);
+    }
+    .fit-col.fit-yes {
+      border-color: rgba(96,234,123,0.28);
+      background: rgba(96,234,123,0.05);
+    }
+    .fit-head {
+      font-size: 0.72rem; font-weight: 800; letter-spacing: 0.1em;
+      text-transform: uppercase; margin-bottom: 18px;
+    }
+    .fit-no .fit-head { color: var(--muted); }
+    .fit-yes .fit-head { color: var(--green); }
+    .fit-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px; }
+    .fit-list li {
+      font-size: 0.92rem; line-height: 1.55; color: var(--muted);
+      padding-left: 24px; position: relative;
+    }
+    .fit-no .fit-list li::before {
+      content: '✕'; position: absolute; left: 0; top: 0;
+      color: rgba(255,255,255,0.28); font-weight: 700;
+    }
+    .fit-yes .fit-list li::before {
+      content: '✓'; position: absolute; left: 0; top: 0;
+      color: var(--green); font-weight: 700;
+    }
+
     /* ── CTA FINAL ── */
     #final-cta { padding: 80px 5%; text-align: center; }
     .cta-box {
@@ -338,6 +375,9 @@
       .hero-desc { max-width: 100%; }
       .hero-cta-group { align-items: center; }
       .hero-trust { justify-content: center; }
+      .cta-filter { text-align: center; max-width: 100%; }
+      .fit-grid { grid-template-columns: 1fr; }
+      .fit-col { padding: 24px 22px; }
       .compare { grid-template-columns: 1fr; }
       .why-grid { grid-template-columns: 1fr; }
       .testi-grid { grid-template-columns: 1fr; }
@@ -380,24 +420,25 @@
 <!-- HERO: SPLIT LAYOUT -->
 <section id="hero">
   <div class="hero-left">
-    <div class="hero-tag">Para creadores, marcas personales y agencias</div>
+    <div class="hero-tag">Para agencias y negocios que ya facturan</div>
 
     <h1>
-      Deja de perder tiempo<br/>
-      <em>editando tus videos.</em>
+      Tu techo no es la demanda.<br/>
+      <em>Es la edición.</em>
     </h1>
 
     <p class="hero-desc">
-      Externalizá la edición con un equipo que entiende tu ritmo. Vos grabás y hacés crecer tu marca — nosotros nos encargamos de que cada video salga a tiempo y con calidad profesional.
+      Si estás rechazando clientes o frenando tu crecimiento porque los videos dependen de vos, absorbemos toda tu producción — la tuya y la de tus clientes — para que vuelvas a vender.
     </p>
 
     <div class="hero-cta-group">
-      <a href="#agendar" class="btn-primary">Agendar reunión gratuita →</a>
+      <a href="#agendar" class="btn-primary">Agendar reunión →</a>
+      <p class="cta-filter">45 minutos, sin compromiso. Agendá solo si ya tenés clientes activos y facturación mensual.</p>
       <div class="hero-trust">
-        <div class="trust-pill"><span>✓</span> Desde 2021</div>
         <div class="trust-pill"><span>✓</span> Entrega en 48hs</div>
-        <div class="trust-pill"><span>✓</span> 3 correcciones</div>
-        <div class="trust-pill"><span>✓</span> +10 países</div>
+        <div class="trust-pill"><span>✓</span> Costo fijo, sin contrato</div>
+        <div class="trust-pill"><span>✓</span> Garantía 7 y 30 días</div>
+        <div class="trust-pill"><span>✓</span> Desde 2021</div>
       </div>
     </div>
   </div>
@@ -419,6 +460,28 @@
       </div>
     </div>
     <p class="vsl-caption">▶ Mirá cómo trabajamos — 5 minutos</p>
+  </div>
+</section>
+
+<!-- CALIFICADOR: filtra principiantes antes de la agenda -->
+<section id="fit">
+  <div class="fit-grid">
+    <div class="fit-col fit-no">
+      <div class="fit-head">Esto no es para vos si</div>
+      <ul class="fit-list">
+        <li>Recién estás empezando y todavía no tenés clientes pagando</li>
+        <li>Buscás el precio más bajo por reel</li>
+        <li>Querés probar un video suelto a ver qué pasa</li>
+      </ul>
+    </div>
+    <div class="fit-col fit-yes">
+      <div class="fit-head">Sí es para vos si</div>
+      <ul class="fit-list">
+        <li>Tenés demanda que no podés atender por estar en la edición</li>
+        <li>Ya tuviste editores o freelancers y te fallaron en tiempos o calidad</li>
+        <li>Querés tomar más clientes sin sumar gente en nómina</li>
+      </ul>
+    </div>
   </div>
 </section>
 
