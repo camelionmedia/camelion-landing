@@ -15,18 +15,24 @@
     document,'script','https://connect.facebook.net/en_US/fbevents.js');
     fbq('init', '1226630459322247');
     fbq('track', 'PageView');
-    // Schedule = agenda confirmada (evento de mayor valor del embudo)
-    // event_id determinístico (basado en contact_id de GHL) para deduplicar
-    // con el evento espejo que manda el webhook de GHL a Meta CAPI (/api/capi)
-    (function() {
-      var params = new URLSearchParams(window.location.search);
-      var contactId = params.get('contact_id');
-      var eventId = contactId ? 'schedule_' + contactId : ('schedule_' + Date.now() + '_' + Math.random().toString(36).slice(2));
-      fbq('track', 'Schedule', {}, { eventID: eventId });
-    })();
+    // NO disparar Schedule desde acá (sacado 2026-08-23).
+    //
+    // Esta página se carga en TODA reserva, calificada o no. Al mandar
+    // Schedule desde el navegador, Meta —que optimiza justamente por
+    // Schedule— estaba aprendiendo "conseguime cualquiera que agende",
+    // y por eso empezaron a llegar leads sin presupuesto y más caros.
+    //
+    // Además el event_id caía siempre en la rama aleatoria (la URL de
+    // /gracias no trae contact_id), así que nunca deduplicaba contra el
+    // evento de GHL: cada reserva calificada contaba DOS veces.
+    //
+    // Única fuente de Schedule desde ahora: la automatización de GHL
+    // "Agencia - API Facebook si califica", que dispara solo cuando el
+    // lead confirma presupuesto. Schedule = lead calificado, punto.
+    //
+    // El volumen total de reservas se sigue midiendo con el PageView de
+    // esta página (y en GHL), sin contaminar la señal de optimización.
   </script>
-  <noscript><img height="1" width="1" style="display:none"
-    src="https://www.facebook.com/tr?id=1226630459322247&ev=Schedule&noscript=1"/></noscript>
   <!-- End Meta Pixel -->
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
