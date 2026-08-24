@@ -372,6 +372,43 @@
     .testi-name { font-size: 0.85rem; font-weight: 700; }
     .testi-country { font-size: 0.72rem; color: var(--muted); }
 
+    .cta-filter {
+      font-size: 0.78rem; color: var(--muted); line-height: 1.5;
+      max-width: 380px; margin: 0;
+    }
+
+    /* ── CALIFICADOR ── */
+    #fit { padding: 0 5% 80px; max-width: 1200px; margin: 0 auto; }
+    .fit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .fit-col {
+      border-radius: 16px; padding: 28px 30px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.02);
+    }
+    .fit-col.fit-yes {
+      border-color: rgba(96,234,123,0.28);
+      background: rgba(96,234,123,0.05);
+    }
+    .fit-head {
+      font-size: 0.72rem; font-weight: 800; letter-spacing: 0.1em;
+      text-transform: uppercase; margin-bottom: 18px;
+    }
+    .fit-no .fit-head { color: var(--muted); }
+    .fit-yes .fit-head { color: var(--green); }
+    .fit-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px; }
+    .fit-list li {
+      font-size: 0.92rem; line-height: 1.55; color: var(--muted);
+      padding-left: 24px; position: relative;
+    }
+    .fit-no .fit-list li::before {
+      content: '✕'; position: absolute; left: 0; top: 0;
+      color: rgba(255,255,255,0.28); font-weight: 700;
+    }
+    .fit-yes .fit-list li::before {
+      content: '✓'; position: absolute; left: 0; top: 0;
+      color: var(--green); font-weight: 700;
+    }
+
     /* ── CTA FINAL ── */
     #final-cta {
       padding: 80px 5%;
@@ -507,6 +544,9 @@
       .hero-desc { max-width: 100%; }
       .hero-cta-group { align-items: center; }
       .hero-trust { justify-content: center; }
+      .cta-filter { text-align: center; max-width: 100%; }
+      .fit-grid { grid-template-columns: 1fr; }
+      .fit-col { padding: 24px 22px; }
       .compare { grid-template-columns: 1fr; }
       .why-grid { grid-template-columns: 1fr; }
       .testi-grid { grid-template-columns: 1fr; }
@@ -548,7 +588,7 @@
 <!-- HERO: SPLIT LAYOUT -->
 <section id="hero">
   <div class="hero-left">
-    <div class="hero-tag">Para agencias de marketing</div>
+    <div class="hero-tag">Para agencias con clientes activos</div>
 
     <h1>
       Tus editores te están<br/>
@@ -557,16 +597,17 @@
     </h1>
 
     <p class="hero-desc">
-      Editores que no cumplen deadlines, videos llenos de errores, y vos corriendo siempre a último momento. Hay una mejor forma.
+      Entregas tarde, videos con errores, y vos revisando todo a último momento para que no se note. Absorbemos la producción de video de tu agencia — white-label, en 48 horas — para que dejes de apagar incendios y puedas tomar más cuentas.
     </p>
 
     <div class="hero-cta-group">
       <a href="#agendar" class="btn-primary">Quiero hablar con Adrián →</a>
+      <p class="cta-filter">45 minutos, sin compromiso. Agendá solo si tu agencia ya tiene clientes activos.</p>
       <div class="hero-trust">
-        <div class="trust-pill"><span>✓</span> Desde 2021</div>
-        <div class="trust-pill"><span>✓</span> Entrega en 48hs</div>
         <div class="trust-pill"><span>✓</span> White-label total</div>
-        <div class="trust-pill"><span>✓</span> +10 países</div>
+        <div class="trust-pill"><span>✓</span> Entrega en 48hs</div>
+        <div class="trust-pill"><span>✓</span> Garantía 7 y 30 días</div>
+        <div class="trust-pill"><span>✓</span> Desde 2021</div>
       </div>
     </div>
   </div>
@@ -588,6 +629,28 @@
       </div>
     </div>
     <p class="vsl-caption">▶ Mirá cómo trabajamos — 5 minutos</p>
+  </div>
+</section>
+
+<!-- CALIFICADOR: filtra agencias sin volumen antes de la agenda -->
+<section id="fit">
+  <div class="fit-grid">
+    <div class="fit-col fit-no">
+      <div class="fit-head">Esto no es para vos si</div>
+      <ul class="fit-list">
+        <li>Tu agencia recién arranca y todavía no tenés clientes facturando</li>
+        <li>Buscás el precio más bajo por reel</li>
+        <li>Necesitás un video suelto, no un flujo constante</li>
+      </ul>
+    </div>
+    <div class="fit-col fit-yes">
+      <div class="fit-head">Sí es para vos si</div>
+      <ul class="fit-list">
+        <li>Tenés cuentas activas y la edición te limita cuántas podés tomar</li>
+        <li>Ya te quedaste sin editor en medio de una entrega</li>
+        <li>Querés escalar sin sumar editores a la nómina</li>
+      </ul>
+    </div>
   </div>
 </section>
 
