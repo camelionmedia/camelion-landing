@@ -12,10 +12,17 @@
    margen tiene para pesar. Esta versión reproduce el mismo look & feel
    (slide & fade tipo Typeform, misma paleta) con CSS transitions puras.
 
+   Orden de pasos — captura temprana de contacto primero:
+   1 WhatsApp · 2 Nombre · 3 Email  →  (guarda el lead como
+   "Formulario iniciado" apenas termina el paso 3, sin bloquear la UI) →
+   4 Punto de dolor · 5 Capacidad de inversión (hard gate) ·
+   6 Decisor + invitados · 7 Calendario · 8 Confirmación.
+
    Habla con el mismo backend que el CRM del portal (camelion-portal /
-   worker.js), acciones públicas book-calendar / book-slots / book-create
-   — es el mismo motor que ya genera el Google Meet, manda los mails por
-   Resend y dispara Meta CAPI. Ver CRM-SETUP.md en ese repo.
+   worker.js): book-create confirma la reserva de verdad (Meet + Resend +
+   Meta CAPI); lead-partial-save solo persiste el contacto temprano, sin
+   generar ninguno de esos efectos — evita ensuciar la señal de Meta con
+   un "Lead" duplicado por la misma persona. Ver CRM-SETUP.md.
    ══════════════════════════════════════════════════════════════════════ */
 (function () {
   'use strict';
@@ -26,8 +33,15 @@
     mountId: 'agendar-funnel',
   }, window.CAMELION_FUNNEL_CONFIG || {});
 
-  var MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-  var DIAS_CORTO = ['D','L','M','M','J','V','S'];
+  var MESES_CORTO = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  var DIAS_CORTO3 = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+
+  var PHASES = [
+    { key: 'datos', label: 'Tus datos', steps: [1, 2, 3] },
+    { key: 'negocio', label: 'Tu negocio', steps: [4, 5, 6] },
+    { key: 'dia', label: 'Día y hora', steps: [7] },
+  ];
+  var TOTAL_STEPS = 7;
 
   var DECISION_OPTIONS = [
     { value: 'solo_yo', label: 'Solo yo' },
@@ -46,12 +60,12 @@
   // input libre con "+" — no hace falta la lista completa de ~200 países
   // para una validación de FORMATO (ver nota de whatsapp_verified abajo).
   var COUNTRY_CODES = [
-    { code: '+54', label: '🇦🇷 +54' }, { code: '+34', label: '🇪🇸 +34' },
-    { code: '+52', label: '🇲🇽 +52' }, { code: '+57', label: '🇨🇴 +57' },
-    { code: '+56', label: '🇨🇱 +56' }, { code: '+51', label: '🇵🇪 +51' },
-    { code: '+593', label: '🇪🇨 +593' }, { code: '+598', label: '🇺🇾 +598' },
-    { code: '+1', label: '🇺🇸/🇵🇷 +1' }, { code: '+506', label: '🇨🇷 +506' },
-    { code: '+other', label: 'Otro' },
+    { code: '+54', flag: '🇦🇷' }, { code: '+34', flag: '🇪🇸' },
+    { code: '+52', flag: '🇲🇽' }, { code: '+57', flag: '🇨🇴' },
+    { code: '+56', flag: '🇨🇱' }, { code: '+51', flag: '🇵🇪' },
+    { code: '+593', flag: '🇪🇨' }, { code: '+598', flag: '🇺🇾' },
+    { code: '+1', flag: '🇺🇸' }, { code: '+506', flag: '🇨🇷' },
+    { code: '+other', flag: '🌎' },
   ];
 
   function readCookie(name) {
@@ -112,10 +126,30 @@
     return 'data:text/calendar;charset=utf-8,' + encodeURIComponent(ics);
   }
 
+  // ── Datos comunes que viajan en cada llamada al backend ────────────────
+  function attributionPayload() {
+    var utm = (window.CamelionUTM && window.CamelionUTM.get()) || {};
+    var variant = /\/v2\b/.test(window.location.pathname) ? 'v2' : 'v1';
+    var fbp = readCookie('_fbp');
+    var fbc = readCookie('_fbc');
+    var fbclidParam = new URLSearchParams(window.location.search).get('fbclid');
+    if (!fbc && fbclidParam) fbc = 'fb.1.' + Date.now() + '.' + fbclidParam;
+    return {
+      source: 'Funnel landing ' + variant,
+      page_url: window.location.href,
+      utm_source: utm.utm_source, utm_medium: utm.utm_medium, utm_campaign: utm.utm_campaign,
+      utm_content: utm.utm_content, utm_term: utm.utm_term, page_referrer: utm.page_referrer,
+      fbp: fbp, fbc: fbc,
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    };
+  }
+
   function BookingFunnel(root) {
     this.root = root;
     this.state = {
       step: 1,
+      leadId: null,
+      partialSaved: false,
       pain_point: null,
       investment_capacity: null,
       decision_maker: null,
@@ -123,7 +157,7 @@
       guestDraft: '',
       name: '', email: '', phone: '', countryCode: '+54', countryOther: '',
       phoneStatus: 'idle', // idle | checking | ok | bad
-      calendar: null, days: [], monthOffset: 0, selectedDate: null, selectedSlot: null,
+      calendar: null, days: [], selectedDate: null, selectedSlot: null,
       calLoading: false, calError: null,
       submitting: false, submitError: null, booking: null,
     };
@@ -134,17 +168,14 @@
   BookingFunnel.prototype.setState = function (patch) {
     Object.assign(this.state, patch);
     this.render();
-    // Efecto secundario DESPUÉS de que el render termine, nunca durante —
-    // dispararlo desde adentro de renderCalendar() (que corre en medio de
-    // construir el HTML) hacía que loadCalendar() llamara a setState(), que
-    // volvía a llamar a render(), que volvía a entrar a renderCalendar()...
-    // recursión infinita y stack overflow apenas se llegaba al paso 5.
-    if (this.state.step === 5 && !this.state.calendar && !this.state.calLoading && !this.state.calError) {
-      this.loadCalendar();
-    }
+    // Efectos secundarios DESPUÉS de que el render termine, nunca durante
+    // — dispararlos desde adentro de un renderX() (que corre en medio de
+    // construir el HTML) hace que el efecto llame a setState(), que vuelve
+    // a llamar a render(), que vuelve a entrar al mismo renderX()...
+    // recursión infinita y stack overflow.
+    var st = this.state;
+    if (st.step === 7 && !st.calendar && !st.calLoading && !st.calError) this.loadCalendar();
   };
-
-  BookingFunnel.prototype.totalSteps = function () { return 6; };
 
   BookingFunnel.prototype.goTo = function (step, extra) {
     this.setState(Object.assign({ step: step }, extra || {}));
@@ -154,7 +185,7 @@
   BookingFunnel.prototype.selectAndAdvance = function (patch, nextStep) {
     var self = this;
     this.setState(patch);
-    setTimeout(function () { self.goTo(nextStep); }, 320);
+    setTimeout(function () { self.goTo(nextStep); }, 300);
   };
 
   BookingFunnel.prototype.phoneFull = function () {
@@ -163,7 +194,7 @@
     return (cc + st.phone).replace(/\s+/g, '');
   };
 
-  // Igual que el nombre/email: toca el estado en silencio y pinta el
+  // Igual que nombre/email: toca el estado en silencio y pinta el
   // indicador a mano en el DOM, sin re-renderizar todo el paso — si no, el
   // input perdería el foco en cada tecla que el usuario escribe.
   BookingFunnel.prototype.onPhoneInput = function (val) {
@@ -172,13 +203,13 @@
     this.state.phone = val;
     this.state.phoneStatus = val.trim() ? 'checking' : 'idle';
     this.patchPhoneStatus();
-    this.syncContactButton();
+    this.syncNextButton();
     if (!val.trim()) return;
     this.phoneTimer = setTimeout(function () {
       var ok = looksLikeValidPhone(self.phoneFull());
       self.state.phoneStatus = ok ? 'ok' : 'bad';
       self.patchPhoneStatus();
-      self.syncContactButton();
+      self.syncNextButton();
     }, 450);
   };
 
@@ -191,6 +222,39 @@
       : st === 'ok' ? '✅ Formato válido'
       : st === 'bad' ? '⚠️ Revisá el código de país y el número'
       : '';
+  };
+
+  // Botón "Continuar" de los pasos 1/2/3 (campo único) — se habilita a mano
+  // sin re-renderizar, mismo motivo que arriba.
+  BookingFunnel.prototype.syncNextButton = function () {
+    var st = this.state;
+    var btn = this.root.querySelector('[data-solo-next]');
+    if (!btn) return;
+    var ok = st.step === 1 ? st.phoneStatus === 'ok'
+      : st.step === 2 ? st.name.trim().length > 1
+      : st.step === 3 ? /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(st.email.trim())
+      : true;
+    btn.disabled = !ok;
+  };
+
+  // ── Guardado temprano del lead (fire-and-forget) ────────────────────────
+  // Se dispara apenas termina el paso 3 (email). No bloquea el avance de
+  // pantalla ni muestra error si falla — el objetivo es best-effort: si
+  // funciona, el contacto ya quedó en el CRM aunque abandone después; si
+  // falla, la reserva final (book-create) igual va a guardar todo.
+  BookingFunnel.prototype.savePartialLead = function () {
+    var self = this;
+    if (this.state.partialSaved) return;
+    this.state.partialSaved = true;
+    var body = Object.assign({
+      name: this.state.name.trim(), email: this.state.email.trim(), phone: this.phoneFull(),
+    }, attributionPayload());
+    fetch(CFG.workerUrl + '?action=lead-partial-save', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (data) { if (data.success && data.lead) self.state.leadId = data.lead.id; })
+      .catch(function () { /* best-effort: la reserva final igual guarda todo */ });
   };
 
   // ── Calendario ───────────────────────────────────────────────────────
@@ -224,25 +288,13 @@
     var self = this;
     var st = this.state;
     this.setState({ submitting: true, submitError: null });
-    var utm = (window.CamelionUTM && window.CamelionUTM.get()) || {};
-    var variant = /\/v2\b/.test(window.location.pathname) ? 'v2' : 'v1';
-    var fbp = readCookie('_fbp');
-    var fbc = readCookie('_fbc');
-    var fbclidParam = new URLSearchParams(window.location.search).get('fbclid');
-    if (!fbc && fbclidParam) fbc = 'fb.1.' + Date.now() + '.' + fbclidParam;
 
-    var body = {
-      slug: CFG.slug, start: st.selectedSlot,
+    var body = Object.assign({
+      slug: CFG.slug, start: st.selectedSlot, lead_id: st.leadId,
       name: st.name.trim(), email: st.email.trim(), phone: this.phoneFull(),
       investment_capacity: true,
       pain_point: st.pain_point, decision_maker: st.decision_maker, guest_emails: st.guest_emails,
-      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      source: 'Funnel landing ' + variant,
-      page_url: window.location.href,
-      utm_source: utm.utm_source, utm_medium: utm.utm_medium, utm_campaign: utm.utm_campaign,
-      utm_content: utm.utm_content, utm_term: utm.utm_term, page_referrer: utm.page_referrer,
-      fbp: fbp, fbc: fbc,
-    };
+    }, attributionPayload());
 
     fetch(CFG.workerUrl + '?action=book-create', {
       method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
@@ -250,14 +302,14 @@
       .then(function (r) { return r.json().then(function (data) { return { ok: r.ok, data: data }; }); })
       .then(function (res) {
         if (!res.ok || !res.data.success) throw new Error(res.data.error || 'No pudimos confirmar la reserva');
-        self.setState({ submitting: false, booking: res.data.booking, step: 6 });
+        self.setState({ submitting: false, booking: res.data.booking, step: 8 });
       })
       .catch(function (e) {
         self.setState({ submitting: false, submitError: e.message });
         // Un horario que se ocupó justo antes: refrescamos la agenda y
-        // mandamos de nuevo al paso 5 para que elija otro.
+        // mandamos de nuevo al paso 7 para que elija otro.
         if (/horario/i.test(e.message)) {
-          self.setState({ step: 5, selectedSlot: null, calendar: null, days: [] });
+          self.setState({ step: 7, selectedSlot: null, calendar: null, days: [] });
           self.loadCalendar();
         }
       });
@@ -266,29 +318,81 @@
   // ── Render ───────────────────────────────────────────────────────────
   BookingFunnel.prototype.render = function () {
     var st = this.state;
-    var progress = st.step === 'blocked' ? 100 : Math.round((st.step / this.totalSteps()) * 100);
-    var label = st.step === 'blocked' ? '' : 'Paso ' + st.step + ' de ' + this.totalSteps();
-
-    var html = '<div class="bf-progress-track"><div class="bf-progress-fill" style="width:' + progress + '%"></div></div>';
-    if (label) html += '<div class="bf-step-label">' + label + '</div>';
-    html += '<div class="bf-step" data-step="' + st.step + '">' + this.renderStep() + '</div>';
-
+    var html = this.renderPhases() + '<div class="bf-step" data-step="' + st.step + '">' + this.renderStep() + '</div>';
     this.root.innerHTML = '<div class="bf-card">' + html + '</div>';
     this.bindEvents();
+  };
+
+  BookingFunnel.prototype.renderPhases = function () {
+    var st = this.state;
+    if (st.step === 'blocked' || st.step === 8) return '';
+    var activePhaseIdx = PHASES.findIndex(function (p) { return p.steps.indexOf(st.step) !== -1; });
+    var pills = PHASES.map(function (p, i) {
+      var cls = i === activePhaseIdx ? ' bf-phase-active' : i < activePhaseIdx ? ' bf-phase-done' : '';
+      return '<span class="bf-phase' + cls + '"><span class="bf-phase-dot"></span>' + esc(p.label) + '</span>';
+    }).join('<span class="bf-phase-sep"></span>');
+    return '<div class="bf-phases">' + pills + '</div>' +
+      '<div class="bf-step-counter">Paso ' + st.step + ' de ' + TOTAL_STEPS + '</div>';
   };
 
   BookingFunnel.prototype.renderStep = function () {
     var st = this.state;
     switch (st.step) {
-      case 1: return this.renderPain();
-      case 2: return this.renderInvestment();
+      case 1: return this.renderPhoneStep();
+      case 2: return this.renderNameStep();
+      case 3: return this.renderEmailStep();
+      case 4: return this.renderPain();
+      case 5: return this.renderInvestment();
       case 'blocked': return this.renderBlocked();
-      case 3: return this.renderDecision();
-      case 4: return this.renderContact();
-      case 5: return this.renderCalendar();
-      case 6: return this.renderSuccess();
+      case 6: return this.renderDecision();
+      case 7: return this.renderCalendar();
+      case 8: return this.renderSuccess();
       default: return '';
     }
+  };
+
+  // ── Paso 1: WhatsApp ─────────────────────────────────────────────────
+  BookingFunnel.prototype.renderPhoneStep = function () {
+    var st = this.state;
+    var ccOptions = COUNTRY_CODES.map(function (c) {
+      return '<option value="' + c.code + '"' + (st.countryCode === c.code ? ' selected' : '') + '>' + c.flag + ' ' + (c.code === '+other' ? 'Otro' : c.code) + '</option>';
+    }).join('');
+    var phoneStatusHtml = '<div class="bf-phone-status' +
+      (st.phoneStatus === 'ok' ? ' bf-ok' : st.phoneStatus === 'bad' ? ' bf-bad' : st.phoneStatus === 'checking' ? ' bf-checking' : '') + '">' +
+      (st.phoneStatus === 'checking' ? '<span class="bf-spin"></span> Verificando formato...'
+        : st.phoneStatus === 'ok' ? '✅ Formato válido'
+        : st.phoneStatus === 'bad' ? '⚠️ Revisá el código de país y el número' : '') +
+      '</div>';
+
+    return '<div class="bf-question">¿Cuál es tu WhatsApp?</div>' +
+      '<div class="bf-question-sub">Ahí te confirmamos la reunión y mandamos el link. No lo compartimos con nadie.</div>' +
+      '<div class="bf-solo-field"><div class="bf-phone-row">' +
+      '<select id="bf-cc">' + ccOptions + '</select>' +
+      '<input type="tel" id="bf-phone" inputmode="tel" autofocus value="' + esc(st.phone) + '" placeholder="11 2345 6789" /></div>' +
+      (st.countryCode === '+other' ? '<input type="text" id="bf-cc-other" style="margin-top:10px;" value="' + esc(st.countryOther) + '" placeholder="Código, ej: +49" />' : '') +
+      phoneStatusHtml + '</div>' +
+      '<div class="bf-nav"><span></span><button type="button" class="bf-next" data-solo-next="1"' + (st.phoneStatus === 'ok' ? '' : ' disabled') + '>Continuar →</button></div>';
+  };
+
+  // ── Paso 2: nombre ───────────────────────────────────────────────────
+  BookingFunnel.prototype.renderNameStep = function () {
+    var st = this.state;
+    return '<div class="bf-question">¿Cómo te llamás?</div>' +
+      '<div class="bf-question-sub">Nombre y apellido, como te gusta que te digan.</div>' +
+      '<div class="bf-solo-field"><input type="text" id="bf-name" autofocus value="' + esc(st.name) + '" placeholder="Tu nombre y apellido" /></div>' +
+      '<div class="bf-nav"><button type="button" class="bf-back" data-back="1">← Atrás</button>' +
+      '<button type="button" class="bf-next" data-solo-next="1"' + (st.name.trim().length > 1 ? '' : ' disabled') + '>Continuar →</button></div>';
+  };
+
+  // ── Paso 3: email ────────────────────────────────────────────────────
+  BookingFunnel.prototype.renderEmailStep = function () {
+    var st = this.state;
+    var emailOk = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(st.email.trim());
+    return '<div class="bf-question">¿Cuál es tu email?</div>' +
+      '<div class="bf-question-sub">Te mandamos la confirmación y el link de la videollamada acá también.</div>' +
+      '<div class="bf-solo-field"><input type="email" id="bf-email" inputmode="email" autofocus value="' + esc(st.email) + '" placeholder="tu@email.com" /></div>' +
+      '<div class="bf-nav"><button type="button" class="bf-back" data-back="2">← Atrás</button>' +
+      '<button type="button" class="bf-next" data-solo-next="1"' + (emailOk ? '' : ' disabled') + '>Continuar →</button></div>';
   };
 
   BookingFunnel.prototype.renderPain = function () {
@@ -299,7 +403,8 @@
         '<span class="bf-option-dot"></span><span>' + esc(o) + '</span></button>';
     }).join('');
     return '<div class="bf-question">¿Estás rechazando trabajo o frenando tu crecimiento por no dar abasto con la edición?</div>' +
-      '<div class="bf-options">' + opts + '</div>';
+      '<div class="bf-options">' + opts + '</div>' +
+      '<div class="bf-nav"><button type="button" class="bf-back" data-back="3">← Atrás</button></div>';
   };
 
   BookingFunnel.prototype.renderInvestment = function () {
@@ -314,7 +419,7 @@
       mk('yes', 'Sí, tengo la capacidad de inversión') +
       mk('no', 'No cuento con la inversión mínima') +
       '</div>' +
-      '<div class="bf-nav"><button type="button" class="bf-back" data-back="1">← Atrás</button></div>';
+      '<div class="bf-nav"><button type="button" class="bf-back" data-back="4">← Atrás</button></div>';
   };
 
   BookingFunnel.prototype.renderBlocked = function () {
@@ -351,67 +456,33 @@
 
     return '<div class="bf-question">¿Quién toma la decisión de contratar?</div>' +
       '<div class="bf-options">' + opts + '</div>' + guestBlock +
-      '<div class="bf-nav"><button type="button" class="bf-back" data-back="2">← Atrás</button>' +
+      '<div class="bf-nav"><button type="button" class="bf-back" data-back="5">← Atrás</button>' +
       '<button type="button" class="bf-next" data-next-decision="1"' + (st.decision_maker ? '' : ' disabled') + '>Continuar →</button></div>';
   };
 
-  BookingFunnel.prototype.renderContact = function () {
-    var st = this.state;
-    var ccOptions = COUNTRY_CODES.map(function (c) {
-      return '<option value="' + c.code + '"' + (st.countryCode === c.code ? ' selected' : '') + '>' + c.label + '</option>';
-    }).join('');
-    // El div existe siempre, aunque esté vacío — patchPhoneStatus() lo pinta
-    // a mano en cada tecla sin volver a dibujar el paso entero, y necesita
-    // encontrarlo ya presente en el DOM desde este primer render.
-    var phoneStatusHtml = '<div class="bf-phone-status' +
-      (st.phoneStatus === 'ok' ? ' bf-ok' : st.phoneStatus === 'bad' ? ' bf-bad' : st.phoneStatus === 'checking' ? ' bf-checking' : '') + '">' +
-      (st.phoneStatus === 'checking' ? '<span class="bf-spin"></span> Verificando formato...'
-        : st.phoneStatus === 'ok' ? '✅ Formato válido'
-        : st.phoneStatus === 'bad' ? '⚠️ Revisá el código de país y el número' : '') +
-      '</div>';
-
-    var emailOk = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(st.email.trim());
-    var canContinue = st.name.trim() && emailOk && st.phoneStatus === 'ok';
-
-    return '<div class="bf-question">Contanos cómo contactarte</div>' +
-      '<div class="bf-field"><label>Nombre completo</label><input type="text" id="bf-name" value="' + esc(st.name) + '" placeholder="Tu nombre y apellido" /></div>' +
-      '<div class="bf-field"><label>Email</label><input type="email" id="bf-email" value="' + esc(st.email) + '" placeholder="tu@email.com" /></div>' +
-      '<div class="bf-field"><label>WhatsApp</label>' +
-      '<div class="bf-phone-row"><select id="bf-cc">' + ccOptions + '</select>' +
-      '<input type="tel" id="bf-phone" value="' + esc(st.phone) + '" placeholder="11 2345 6789" /></div>' +
-      (st.countryCode === '+other' ? '<input type="text" id="bf-cc-other" style="margin-top:8px;" value="' + esc(st.countryOther) + '" placeholder="Código, ej: +49" />' : '') +
-      phoneStatusHtml + '</div>' +
-      '<div class="bf-nav"><button type="button" class="bf-back" data-back="3">← Atrás</button>' +
-      '<button type="button" class="bf-next" data-next-contact="1"' + (canContinue ? '' : ' disabled') + '>Continuar →</button></div>';
-  };
-
+  // ── Paso 7: calendario — tira de días + pills de horario ────────────
   BookingFunnel.prototype.renderCalendar = function () {
     var st = this.state;
     if (!st.calendar && !st.calError) return '<div class="bf-loading">Cargando horarios...</div>';
     if (st.calError) return '<div class="bf-question">No pudimos abrir la agenda</div><p class="bf-empty-note">' + esc(st.calError) + '</p>' +
-      '<div class="bf-nav"><button type="button" class="bf-back" data-back="4">← Atrás</button></div>';
+      '<div class="bf-nav"><button type="button" class="bf-back" data-back="6">← Atrás</button></div>';
 
     var tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
     var byDate = {};
     st.days.forEach(function (d) { byDate[d.date] = d.slots; });
-    var hasSlots = {};
-    Object.keys(byDate).forEach(function (k) { hasSlots[k] = true; });
 
-    var base = st.days[0] ? new Date(st.days[0].date + 'T12:00:00') : new Date();
-    var ancla = new Date(base.getFullYear(), base.getMonth() + st.monthOffset, 1);
-    var arranque = new Date(ancla); arranque.setDate(1 - ancla.getDay());
-    var celdas = [];
-    for (var i = 0; i < 42; i++) { var d = new Date(arranque); d.setDate(arranque.getDate() + i); celdas.push(d); }
-
-    var dow = DIAS_CORTO.map(function (d) { return '<div class="bf-cal-dow">' + d + '</div>'; }).join('');
-    var grid = celdas.map(function (d) {
-      var key = d.toLocaleDateString('en-CA');
-      var otroMes = d.getMonth() !== ancla.getMonth();
-      var hay = hasSlots[key];
-      var sel = key === st.selectedDate;
-      var cls = 'bf-cal-day' + (hay ? ' bf-has-slots' : '') + (sel ? ' bf-day-selected' : '');
-      return '<button type="button" class="' + cls + '" data-day="' + key + '"' + (hay ? '' : ' disabled') +
-        ' style="' + (otroMes && !hay ? 'visibility:hidden' : '') + '">' + d.getDate() + '</button>';
+    var mesPrevio = null;
+    var dayPills = st.days.map(function (d) {
+      var date = new Date(d.date + 'T12:00:00');
+      var mes = MESES_CORTO[date.getMonth()];
+      var mostrarMes = mes !== mesPrevio;
+      mesPrevio = mes;
+      var sel = d.date === st.selectedDate;
+      return '<button type="button" class="bf-day-pill' + (sel ? ' bf-day-selected' : '') + '" data-day="' + d.date + '">' +
+        '<span class="bf-day-pill-dow">' + DIAS_CORTO3[date.getDay()] + '</span>' +
+        '<span class="bf-day-pill-num">' + date.getDate() + '</span>' +
+        (mostrarMes ? '<span class="bf-day-pill-mon">' + mes + '</span>' : '<span class="bf-day-pill-mon">&nbsp;</span>') +
+        '</button>';
     }).join('');
 
     var slots = (byDate[st.selectedDate] || []);
@@ -420,16 +491,15 @@
           var sel = s === st.selectedSlot;
           return '<button type="button" class="bf-slot' + (sel ? ' bf-slot-selected' : '') + '" data-slot="' + s + '">' + fmtSlotHora(s, tz) + '</button>';
         }).join('') + '</div>'
-      : '<p class="bf-empty-note">' + (st.selectedDate ? 'Ese día no tiene horarios libres.' : (st.days.length ? 'Elegí un día con horarios disponibles.' : 'No hay horarios libres por ahora. Escribinos y lo coordinamos a mano.')) + '</p>';
+      : '<p class="bf-empty-note">' + (st.days.length ? 'Elegí un día para ver los horarios.' : 'No hay horarios libres por ahora. Escribinos y lo coordinamos a mano.') + '</p>';
 
     return '<div class="bf-question">Elegí el día y la hora</div>' +
-      '<div class="bf-cal-header"><div class="bf-cal-title">' + MESES[ancla.getMonth()] + ' ' + ancla.getFullYear() + '</div>' +
-      '<div class="bf-cal-nav"><button type="button" data-month="-1"' + (st.monthOffset <= 0 ? ' disabled' : '') + '>←</button>' +
-      '<button type="button" data-month="1">→</button></div></div>' +
-      '<div class="bf-cal-grid">' + dow + grid + '</div>' +
-      '<div class="bf-slots-label">Horarios (' + tz.replace(/_/g, ' ') + ')</div>' + slotsHtml +
+      '<div class="bf-question-sub">Duración: ' + (st.calendar.duration_min || 30) + ' min · Horarios en tu zona (' + tz.replace(/_/g, ' ') + ')</div>' +
+      '<div class="bf-days-label">Día</div>' +
+      '<div class="bf-days-strip">' + dayPills + '</div>' +
+      '<div class="bf-slots-label">Horario</div>' + slotsHtml +
       (st.submitError ? '<div class="bf-error">⚠️ ' + esc(st.submitError) + '</div>' : '') +
-      '<div class="bf-nav"><button type="button" class="bf-back" data-back="4">← Atrás</button>' +
+      '<div class="bf-nav"><button type="button" class="bf-back" data-back="6">← Atrás</button>' +
       '<button type="button" class="bf-next" data-confirm="1"' + (st.selectedSlot && !st.submitting ? '' : ' disabled') + '>' +
       (st.submitting ? 'Confirmando...' : 'Confirmar reunión') + '</button></div>';
   };
@@ -456,24 +526,66 @@
     var self = this;
     var root = this.root;
 
-    root.querySelectorAll('[data-pain]').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        self.selectAndAdvance({ pain_point: PAIN_OPTIONS[+btn.dataset.pain] }, 2);
+    // `autofocus` como atributo HTML no hace nada cuando el marcado se
+    // inyecta vía innerHTML (solo funciona en el parseo inicial de la
+    // página) — el foco automático de cada paso de un solo campo hay que
+    // pedirlo a mano. El pequeño setTimeout evita pelear con la animación
+    // de entrada del paso, que si no a veces se comía el foco.
+    var autoFocusEl = root.querySelector('[autofocus]');
+    if (autoFocusEl) setTimeout(function () { autoFocusEl.focus(); }, 60);
+
+    // Paso 1 — WhatsApp
+    var ccSelect = root.querySelector('#bf-cc');
+    if (ccSelect) ccSelect.addEventListener('change', function (e) { self.setState({ countryCode: e.target.value }); self.onPhoneInput(self.state.phone); });
+    var ccOther = root.querySelector('#bf-cc-other');
+    if (ccOther) ccOther.addEventListener('input', function (e) { self.state.countryOther = e.target.value; self.onPhoneInput(self.state.phone); });
+    var phoneInput = root.querySelector('#bf-phone');
+    if (phoneInput) {
+      phoneInput.addEventListener('input', function (e) { self.onPhoneInput(e.target.value); });
+      phoneInput.addEventListener('keydown', function (e) { if (e.key === 'Enter' && self.state.phoneStatus === 'ok') self.goTo(2); });
+    }
+
+    // Paso 2 — nombre
+    var nameInput = root.querySelector('#bf-name');
+    if (nameInput) {
+      nameInput.addEventListener('input', function (e) { self.state.name = e.target.value; self.syncNextButton(); });
+      nameInput.addEventListener('keydown', function (e) { if (e.key === 'Enter' && self.state.name.trim().length > 1) self.goTo(3); });
+    }
+
+    // Paso 3 — email
+    var emailInput = root.querySelector('#bf-email');
+    if (emailInput) {
+      emailInput.addEventListener('input', function (e) { self.state.email = e.target.value; self.syncNextButton(); });
+      emailInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(self.state.email.trim())) { self.savePartialLead(); self.goTo(4); }
       });
+    }
+
+    var soloNext = root.querySelector('[data-solo-next]');
+    if (soloNext) soloNext.addEventListener('click', function () {
+      if (soloNext.disabled) return;
+      if (self.state.step === 3) self.savePartialLead();
+      self.goTo(self.state.step + 1);
     });
 
+    // Pasos 4/5 — opción única con avance automático
+    root.querySelectorAll('[data-pain]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        self.selectAndAdvance({ pain_point: PAIN_OPTIONS[+btn.dataset.pain] }, 5);
+      });
+    });
     root.querySelectorAll('[data-invest]').forEach(function (btn) {
       btn.addEventListener('click', function () {
         var val = btn.dataset.invest;
         if (val === 'no') { self.selectAndAdvance({ investment_capacity: false }, 'blocked'); return; }
-        self.selectAndAdvance({ investment_capacity: true }, 3);
+        self.selectAndAdvance({ investment_capacity: true }, 6);
       });
     });
 
+    // Paso 6 — decisor + invitados
     root.querySelectorAll('[data-decision]').forEach(function (btn) {
       btn.addEventListener('click', function () { self.setState({ decision_maker: btn.dataset.decision }); });
     });
-
     var addGuestBtn = root.querySelector('[data-add-guest]');
     if (addGuestBtn) addGuestBtn.addEventListener('click', function () {
       var input = root.querySelector('#bf-guest-input');
@@ -488,31 +600,15 @@
         self.setState({ guest_emails: self.state.guest_emails.filter(function (_, idx) { return idx !== i; }) });
       });
     });
-
     var nextDecision = root.querySelector('[data-next-decision]');
-    if (nextDecision) nextDecision.addEventListener('click', function () { if (!nextDecision.disabled) self.goTo(4); });
+    if (nextDecision) nextDecision.addEventListener('click', function () { if (!nextDecision.disabled) self.goTo(7); });
 
-    var nameInput = root.querySelector('#bf-name');
-    if (nameInput) nameInput.addEventListener('input', function (e) { self.state.name = e.target.value; self.syncContactButton(); });
-    var emailInput = root.querySelector('#bf-email');
-    if (emailInput) emailInput.addEventListener('input', function (e) { self.state.email = e.target.value; self.syncContactButton(); });
-    var ccSelect = root.querySelector('#bf-cc');
-    if (ccSelect) ccSelect.addEventListener('change', function (e) { self.setState({ countryCode: e.target.value }); self.onPhoneInput(self.state.phone); });
-    var ccOther = root.querySelector('#bf-cc-other');
-    if (ccOther) ccOther.addEventListener('input', function (e) { self.state.countryOther = e.target.value; self.onPhoneInput(self.state.phone); });
-    var phoneInput = root.querySelector('#bf-phone');
-    if (phoneInput) phoneInput.addEventListener('input', function (e) { self.onPhoneInput(e.target.value); });
-
-    var nextContact = root.querySelector('[data-next-contact]');
-    if (nextContact) nextContact.addEventListener('click', function () { if (!nextContact.disabled) self.goTo(5); });
-
+    // Navegación atrás genérica
     root.querySelectorAll('[data-back]').forEach(function (btn) {
       btn.addEventListener('click', function () { self.goTo(+btn.dataset.back); });
     });
 
-    root.querySelectorAll('[data-month]').forEach(function (btn) {
-      btn.addEventListener('click', function () { self.setState({ monthOffset: self.state.monthOffset + (+btn.dataset.month) }); });
-    });
+    // Paso 7 — calendario
     root.querySelectorAll('[data-day]').forEach(function (btn) {
       btn.addEventListener('click', function () { self.setState({ selectedDate: btn.dataset.day, selectedSlot: null }); });
     });
@@ -521,18 +617,6 @@
     });
     var confirmBtn = root.querySelector('[data-confirm]');
     if (confirmBtn) confirmBtn.addEventListener('click', function () { if (!confirmBtn.disabled) self.submit(); });
-  };
-
-  // Los inputs de texto libre (nombre/email) re-renderizarían el DOM y le
-  // harían perder el foco al usuario en cada tecla si pasaran por setState
-  // — por eso solo tocan el estado en silencio y habilitan/deshabilitan el
-  // botón a mano, sin volver a dibujar todo el paso.
-  BookingFunnel.prototype.syncContactButton = function () {
-    var st = this.state;
-    var emailOk = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(st.email.trim());
-    var canContinue = st.name.trim() && emailOk && st.phoneStatus === 'ok';
-    var btn = this.root.querySelector('[data-next-contact]');
-    if (btn) btn.disabled = !canContinue;
   };
 
   function init() {
